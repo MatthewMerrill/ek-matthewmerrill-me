@@ -1,39 +1,39 @@
-* {
+.chat-section {
     box-sizing: border-box;
-}
-
-html {
-    overflow-y: scroll;
-}
-
-body {
     font-family: monospace;
     font-size: 14px;
-    max-width: 480px;
+    
+    max-width: 500px;
     margin: 0 auto;
-    padding: 20px
+    padding: 40px;
 }
 
-input {
+.chat-section #chatControls {
     width: 100%;
-    padding: 5px;
-    margin: 5px 0;
+    overflow: hidden;
 }
 
-button {
+.chat-section input {
+    width: 100%;
+    float: left;
+}
+
+.chat-section #chatControls span {
+    display: block;
+    overflow: hidden;
+    margin-right: 20px;
+    padding-right: 10px;
+}
+
+.chat-section button {
     float: right;
 }
 
-li {
+.chat-section li {
     margin: 5px 0;
 }
 
-#chatControls {
-    overflow: auto;
-    margin: 0 0 5px 0
-}
-
-#userlist {
+.chat-section #userlist {
     position: fixed;
     left: 50%;
     list-style: none;
@@ -41,22 +41,27 @@ li {
     background: #f0f0f9;
     padding: 5px 10px;
     width: 150px;
-    top: 11px;
+    margin-top: 11px;
 }
 
-#chat p {
+.chat-section #chat {
+	overflow-x: hidden;
+    overflow-y: visible;
+}
+
+.chat-section #chat p {
     margin: 5px 0;
     font-weight: 300
 }
 
-#chat .timestamp {
+.chat-section #chat .timestamp {
     position: absolute;
     top: 10px;
     right: 10px;
     font-size: 12px;
 }
 
-#chat article {
+.chat-section #chat article {
     background: #f1f1f1;
     padding: 10px;
     margin: 10px 0;
@@ -65,7 +70,7 @@ li {
     word-wrap: break-word;
 }
 
-#chat article:first-of-type {
+.chat-section #chat article:first-of-type {
     background: #c9edc3;
     border-left-color: #74a377;
     animation: enter .2s 1;

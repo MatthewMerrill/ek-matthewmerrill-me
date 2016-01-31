@@ -32,7 +32,7 @@ public class Main {
         
 		get("/hello", (req, res) -> "Hello World");
 
-		get("/", (request, response) -> {
+		get("/chat", (request, response) -> {
 			Map<String, Object> attributes = new HashMap<>();
 			attributes.put("message", "Hello World!");
 
@@ -52,19 +52,7 @@ public class Main {
 			Connection connection = null;
 			Map<String, Object> attributes = new HashMap<>();
 			try {
-				connection = DatabaseUrl.extract().getConnection();
-
-				//Statement stmt = connection.createStatement();
-				//stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
-				//stmt.executeUpdate("INSERT INTO ticks VALUES (now())");
-				//ResultSet rs = stmt.executeQuery("SELECT tick FROM ticks");
-
-				///ArrayList<String> output = new ArrayList<String>();
-				//while (rs.next()) {
-				//	output.add("Read from DB: " + rs.getTimestamp("tick"));
-				//}
-
-				//attributes.put("results", output);
+				
 				return new ModelAndView(attributes, "db.ftl");
 			} catch (Exception e) {
 				attributes.put("message", "There was an error: " + e);

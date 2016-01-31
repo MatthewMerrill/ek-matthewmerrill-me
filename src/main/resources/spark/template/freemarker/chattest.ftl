@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>WebsSockets</title>
-    <link rel="stylesheet" href="/css/chatstyle.css">
+  <title>Browse Lobbies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/chatstyle.css">
+  
+  <#include "header.ftl">
 </head>
-<body>
-    <div id="chatControls">
-    <img src="/lang-logo.png"></img>
-        <input id="message" placeholder="Type your message">
+
+    <#include "banner.ftl">
+    
+  <body>
+  
+    <div class="chat-section">
+      <div id="chatControls">
         <button id="send">Send</button>
-    </div>
-    <ul id="userlist"> <!-- Built by JS --> </ul>
-    <div id="chat">    <!-- Built by JS --> </div>
-    <script src="/js/websocketDemo.js"></script>
-</body>
+        <span><input id="message" placeholder="Type your message"></span>
+      </div>
+      
+      <ul id="userlist"> <!-- Built by JS --> </ul>
+      <div id="chat">    <!-- Built by JS --> </div>
+      <script src="/js/websocketDemo.js"></script>
+    </chatSection>
+  </body>
 </html>
