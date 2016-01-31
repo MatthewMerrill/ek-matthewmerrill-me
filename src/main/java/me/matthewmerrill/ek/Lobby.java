@@ -3,42 +3,92 @@ package me.matthewmerrill.ek;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import me.matthewmerrill.ek.card.BombCard;
 import me.matthewmerrill.ek.card.Card;
+import me.matthewmerrill.ek.card.CollectCard;
 import me.matthewmerrill.ek.card.Deck;
 import me.matthewmerrill.ek.card.DefuseCard;
 import me.matthewmerrill.ek.card.SkipCard;
 
-public class Lobby {
+public class Lobby extends HashMap<String, Object> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 852865897444942442L;
 	
-	public final Deck deck;
+	public static final String NAME = "name";
+	public static final String ID = "id";
 	
-	public final Map<String, Player> map = new HashMap<String, Player>();
-	public final List<Player> players = new ArrayList<Player>();
+	public static final String PASSWORD = "password";
 	
-	private int playerIndex = 0;
-	public final int direction = 1;
+	public static final String PLAYERS = "players";
+	public static final String PLAYER_COUNT = "playerCount";
+	public static final String MAX_PLAYERS = "maxPlayers";
+
+	public static final String DRAW_DECK = "drawDeck";
+	public static final String BOMBS_EXPLODED = "bombsExploded";
+	public static final String BOMBS_REMAINING = "bombsRemaining";
 	
-	public Lobby() {
-		deck = new Deck();
+	public static final String PLAYER_TURN = "playerTurn";
+	public static final String TURN_INDEX = "turnIndex";
+	public static final String TURN_DIRECTION = "turnDirection";
+	
+	public Lobby(String name) {
+		put(NAME, name);
+		put(ID, 0);
+		
+		put(PASSWORD, null);
+		
+		put(PLAYERS, new ArrayList<Player>());
+		put(MAX_PLAYERS, 4);
+		
+		put(DRAW_DECK, new Deck());
+		put(BOMBS_EXPLODED, 0);
+		put(BOMBS_REMAINING, 0);
+		
+		put(PLAYER_TURN, 0);
+		put(TURN_DIRECTION, 1);
 	}
 	
+	public Deck getDrawDeck() {
+		return (Deck) get(DRAW_DECK);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Player> getPlayers() {
+		return (List<Player>) get(PLAYERS);
+	}
+	
+	public int getTurnIndex() {
+		return (Integer) get(TURN_INDEX);
+	}
+	public void setPlayerIndex(int index) {
+		index %= getPlayers().size();
+		put(TURN_INDEX, index);		
+	}
+
 	public void deal() {
 		
+		Deck deck = getDrawDeck();
+		List<Player> players = getPlayers();
+
 		deck.clear();
-		players.forEach((Player player) -> player.playerDeck.clear());
-		
+		players.forEach((Player player) ->
+			((Deck)player.get(Player.DECK)).clear());
+
 		// Deal bulk of player cards
 		{
 			for (Card card : SkipCard.startingCards())
 				deck.add(card);
-			
+			for (Card card : CollectCard.startingCards())
+				deck.add(card);
+
 			deck.shuffle();
-			
+
 			players.forEach((Player player) -> {
-				while (player.playerDeck.size() < 4)
+				while (player.getDeck().size() < 4)
 					player.giveCard(deck.draw());
 			});
 		}
@@ -46,33 +96,32 @@ public class Lobby {
 		// Handle defuse cards
 		{
 			final Deck defuseDeck = new Deck();
-			
+
 			for (Card card : DefuseCard.startingCards())
 				defuseDeck.add(card);
-			
+
 			defuseDeck.shuffle();
-			
+
 			players.forEach((Player player) -> player.giveCard(defuseDeck.draw()));
 			deck.addAll(defuseDeck);
-			
+
 			defuseDeck.clear();
 		}
-		
+
 		// Add bomb cards, shuffle once more and we're done!
 		{
 			for (Card card : BombCard.startingCards())
 				deck.add(card);
-			
+
 			deck.shuffle();
 		}
 		
+		put(BOMBS_EXPLODED, 0);
+		put(BOMBS_REMAINING, 0);
 	}
-	
-	public int getPlayerIndex() {
-		return playerIndex;
-	}
-	public void setPlayerIndex(int index) {
-		this.playerIndex = index %= players.size();
+
+	public void nextTurn() {
+		// TODO Auto-generated method stub
 	}
 
 }

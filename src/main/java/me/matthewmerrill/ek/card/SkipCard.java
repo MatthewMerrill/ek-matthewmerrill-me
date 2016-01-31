@@ -5,6 +5,11 @@ import me.matthewmerrill.ek.Player;
 
 public class SkipCard extends Card {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	enum SkipType {
 		
 		DEFAULT("");
@@ -19,24 +24,24 @@ public class SkipCard extends Card {
 		}
 	}
 	
-	public SkipCard(SkipType type) {
-		super("skip" + type.suffix());
+	public SkipCard(SkipType type, String id) {
+		super(id, "skip" + type.suffix());
 	}
 	
 	
 	public static Card[] startingCards() {
 		return new Card[] {
-			new SkipCard(SkipType.DEFAULT),
-			new SkipCard(SkipType.DEFAULT),
-			new SkipCard(SkipType.DEFAULT),
-			new SkipCard(SkipType.DEFAULT),	
+			new SkipCard(SkipType.DEFAULT, "0"),
+			new SkipCard(SkipType.DEFAULT, "1"),
+			new SkipCard(SkipType.DEFAULT, "2"),
+			new SkipCard(SkipType.DEFAULT, "3"),	
 		};
 	}
 
 
 	@Override
 	public void played(Lobby lobby, Deck deck, Player player) {
-		lobby.setPlayerIndex(lobby.getPlayerIndex() + lobby.direction);
+		//lobby.setPlayerIndex(lobby.getPlayerIndex() + lobby.direction);
 	}
 	
 

@@ -9,9 +9,9 @@ public class Deck extends ArrayList<Card> {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -5493968985161180117L;
+	private static final long serialVersionUID = -5493968985161180117L;	
 	
-	private Random rand = new Random();
+	private static Random rand = new Random();
 	
 	public Card draw() {
 		return remove(0);

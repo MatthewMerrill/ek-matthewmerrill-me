@@ -1,23 +1,35 @@
 package me.matthewmerrill.ek;
 
+import java.util.HashMap;
+
 import me.matthewmerrill.ek.card.Card;
 import me.matthewmerrill.ek.card.Deck;
 
-public class Player {
+public class Player extends HashMap<String, Object> {
 	
-	public final String name;
-	
-	public final Deck playerDeck;
-	
-	public boolean killed = false;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public static final String NAME = "name";
+	public static final String DECK = "playerDeck";
+	public static final String KILLED = "killed";
 	
 	public Player(String name) {
-		this.name = name;
-		this.playerDeck = new Deck();
+		put(NAME, name);
+		put(DECK, new Deck());
+		put(KILLED, false);
+	}
+	
+	public Deck getDeck() {
+		return (Deck) get(DECK);
 	}
 	
 	public void giveCard(Card card) {
-		playerDeck.add(card);
+		Deck deck = (Deck) get(DECK);
+		deck.add(card);
+		put(DECK, deck);
 	}
 
 }
