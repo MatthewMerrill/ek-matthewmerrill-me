@@ -1,5 +1,6 @@
 package me.matthewmerrill.ek;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,9 +36,17 @@ public class Lobby extends HashMap<String, Object> {
 	public static final String TURN_INDEX = "turnIndex";
 	public static final String TURN_DIRECTION = "turnDirection";
 	
+	private static BigInteger curId = BigInteger.valueOf(16 * 16 * 16 * 16 - 1);
+	
 	public Lobby(String name) {
+		this(
+			(curId = curId.add(BigInteger.ONE)).toString(16),
+			name);
+	}
+	
+	public Lobby(String id, String name) {
 		put(NAME, name);
-		put(ID, 0);
+		put(ID, id);
 		
 		put(PASSWORD, null);
 		
@@ -55,6 +64,15 @@ public class Lobby extends HashMap<String, Object> {
 	public Deck getDrawDeck() {
 		return (Deck) get(DRAW_DECK);
 	}
+
+	public String getName() {
+		return get(NAME).toString();
+	}
+
+	public String getId() {
+		return get(ID).toString();
+	}
+
 	
 	@SuppressWarnings("unchecked")
 	public List<Player> getPlayers() {
@@ -124,4 +142,22 @@ public class Lobby extends HashMap<String, Object> {
 		// TODO Auto-generated method stub
 	}
 
+	public boolean hasPassword() {
+		return containsKey(PASSWORD) && getPassword() != null;
+	}
+	
+	public String getPassword() {
+		return (String) get(PASSWORD);
+	}
+	
+	public boolean isPassword(String password) {
+		if (!hasPassword())
+			return true;
+		
+		return getPassword().equals(password);
+	}
+	
+	public void setPassword(String password) {
+		put(PASSWORD, password);
+	}
 }

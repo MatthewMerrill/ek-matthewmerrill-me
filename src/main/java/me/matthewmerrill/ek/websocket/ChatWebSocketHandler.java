@@ -1,3 +1,4 @@
+package me.matthewmerrill.ek.websocket;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.websocket.api.*;

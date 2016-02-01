@@ -48,7 +48,8 @@ div#banner-wrapper a, .navbar a {
 div#banner-wrapper {
 	width: 100%;
 	height: 100px; /* height of the background image? */
-	background: url("/img/tartan.png") repeat-x 0 0;
+	background: url("/img/tartan.jpg") repeat-x 0 0;
+	background-color: #063119;
 	text-align: center;
 	padding-top: 10px;
 	padding-bottom: 0px;
@@ -105,7 +106,7 @@ div#banner-wrapper h1 {
 
 .navbar td {
 	position: initial;
-	padding: 5px 10px;
+	padding: 5px 3px;
 	text-align: center;
 	
 	color: #F5F2EB;
@@ -119,5 +120,111 @@ div#banner-wrapper h1 {
 	border-top-color: #212C48;
 	border-bottom-color: #444D66;
 	border-right-color: #444D66;
+}
+
+
+
+
+
+/*									CHAT */
+
+.chat-section {
+    box-sizing: border-box;
+    font-family: monospace;
+    font-size: 14px;
+    
+    width: 100%;
+	height: 100%;
+	
+    margin: 0;
+    padding: 10px;
+    
+}
+
+.chat-section #chatControls {
+    width: 100%;
+    overflow: hidden;
+}
+
+.chat-section input {
+	display: inline-block;
+    width: 100%;
+    float: left;
+}
+
+.chat-section #chatControls span {
+    display: block;
+    overflow: hidden;
+    margin-right: 20px;
+    padding-right: 10px;
+}
+
+.chat-section button {
+    float: right;
+}
+
+.chat-section li {
+    margin: 5px 0;
+}
+
+.chat-section #userlist {
+    position: relative;
+    left: 15px;
+    
+    float: right;
+    
+    list-style: none;
+    background: #f0f0f9;
+    padding: 5px 10px;
+    width: 150px;
+    margin-top: 11px;
+}
+
+.chat-section #chat-wrapper {
+	margin-top: 10px;
+	padding-right: 10px;
+	height: 95%;
+	overflow-x: hidden;
+    overflow-y: scroll;
+    
+    background-color: #BBBBBB;
+}
+
+.chat-section #chat {
+	padding: 5px;
+	overflow: hidden;
+}
+
+.chat-section #chat p {
+    margin: 5px 0;
+    font-weight: 300
+}
+
+.chat-section #chat .timestamp {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 12px;
+}
+
+.chat-section #chat article {
+    background: #F5F5F5;
+    padding: 10px;
+    margin: 10px 0;
+    border-left: 5px solid #9D9B99;
+    position: relative;
+    word-wrap: break-word;
+}
+
+.chat-section #chat article:first-of-type {
+    background: #D9FFE9;
+    border-left-color: #56CE8A;
+    animation: enter .2s 1;
+}
+
+@keyframes enter {
+    from { transform: none;        }
+    50%  { transform: scale(1.05); }
+    to   { transform: none;        }
 }
 

@@ -1,3 +1,4 @@
+package me.matthewmerrill.ek.websocket;
 import org.eclipse.jetty.websocket.api.*;
 import org.json.*;
 import java.text.*;

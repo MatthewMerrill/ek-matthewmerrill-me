@@ -1,7 +1,12 @@
 <div id="banner-wrapper">
   <div id="banner">
     <a href="/">
-      <h1>E. K.</h1>
+    
+		<#if lobby?has_content>
+   		   <h1>${lobby.name}</h1>
+		<#else>
+    	  <h1>E. K.</h1>
+		</#if>
     </a>
   </div> 
 </div>

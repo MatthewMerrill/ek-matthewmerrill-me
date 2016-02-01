@@ -4,7 +4,31 @@
 
 /* Feel free to copy&paste color codes to your application */
 
+/* Bright */
 
+.color-primary-0 { color: #A8FFCE }	/* Main Primary color */
+.color-primary-1 { color: #FFFFFF }
+.color-primary-2 { color: #D9FFE9 }
+.color-primary-3 { color: #80FFB7 }
+.color-primary-4 { color: #5BFFA2 }
+
+.color-secondary-1-0 { color: #B1C8FF }	/* Main Secondary color (1) */
+.color-secondary-1-1 { color: #FFFFFF }
+.color-secondary-1-2 { color: #DDE7FF }
+.color-secondary-1-3 { color: #8EAEFF }
+.color-secondary-1-4 { color: #6D96FF }
+
+.color-secondary-2-0 { color: #FFE3A8 }	/* Main Secondary color (2) */
+.color-secondary-2-1 { color: #FFFFFF }
+.color-secondary-2-2 { color: #FFF3D9 }
+.color-secondary-2-3 { color: #FFD680 }
+.color-secondary-2-4 { color: #FFC95B }
+
+.color-complement-0 { color: #FFBAA8 }	/* Main Complement color */
+.color-complement-1 { color: #FFFFFF }
+.color-complement-2 { color: #FFE1D9 }
+.color-complement-3 { color: #FF9B80 }
+.color-complement-4 { color: #FF7D5B }
 
 /* Light Pastel */
 

@@ -1,0 +1,23 @@
+
+body {
+	overflow-y: hidden;
+}
+
+#play-chat {
+	dispay: inline-block;
+	
+	margin: auto 10px;
+	
+	max-width: 550px;
+	height: 100%;
+	
+	background-color: #9D9B99;
+	border-top: 5px solid #F5F5F5;
+}
+
+#play-chat h2 {
+	color: #0A142E;
+	text-align: center;
+	
+	background-color: #BBBBBB;
+}
