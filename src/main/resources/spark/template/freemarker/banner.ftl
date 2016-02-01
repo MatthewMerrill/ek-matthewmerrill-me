@@ -1,9 +1,12 @@
 <div id="banner-wrapper">
- <div id="banner">
-  <h1>E. K.</h1>
- </div> 
+  <div id="banner">
+    <a href="/">
+      <h1>E. K.</h1>
+    </a>
+  </div> 
 </div>
     
+<#include "nav.ftl">
     <!--
     <ul class="nav navbar-nav">
       <li class="active">

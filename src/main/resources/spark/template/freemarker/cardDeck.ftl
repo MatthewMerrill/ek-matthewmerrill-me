@@ -1,13 +1,8 @@
-<div class="container">
+<div class="deck">
 
-  <h1><#if playername??></h1>
-    <ul>
+  <h4><#if playername??></h4>
     <#list cards as card>
-      <li> ${card> </li>
+      <div class="deck-card"> <img src="${card.imageUrl}"/> </div>
     </#list>
-    </ul>
 
 </div>
-
-</body>
-</html>

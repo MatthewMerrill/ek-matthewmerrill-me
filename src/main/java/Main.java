@@ -29,7 +29,14 @@ public class Main {
         staticFileLocation("/public"); //index.html is served at localhost:4567 (default port)
 		webSocket("/chat", ChatWebSocketHandler.class);
         init();
-        
+
+		get("/", (request, response) -> {
+			Map<String, Object> attributes = new HashMap<>();
+			attributes.put("message", "Hello World!");
+
+			return new ModelAndView(attributes, "index.ftl");
+		} , new FreeMarkerEngine());
+		
 		get("/hello", (req, res) -> "Hello World");
 
 		get("/chat", (request, response) -> {
@@ -53,7 +60,7 @@ public class Main {
 			Map<String, Object> attributes = new HashMap<>();
 			try {
 				
-				return new ModelAndView(attributes, "db.ftl");
+				return new ModelAndView(attributes, "game.ftl");
 			} catch (Exception e) {
 				attributes.put("message", "There was an error: " + e);
 				return new ModelAndView(attributes, "error.ftl");
