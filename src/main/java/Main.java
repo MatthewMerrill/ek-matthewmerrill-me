@@ -13,7 +13,6 @@ import spark.ModelAndView;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
 
-
 public class Main {
 
 	public static LobbyManager lm = new LobbyManager();

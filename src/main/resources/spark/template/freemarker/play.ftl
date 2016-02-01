@@ -16,10 +16,18 @@
 	<body>
 		<#include "banner.ftl">
 		
-		<div id="play-chat">
-			<h2>Lobby Chat</h2>
-			<#include "chatSection.ftl">
-		</div>
+		
+		<ul class="container">
+			<li id="play-sandbox-container">
+	        	<div id="play-sandbox">GAME GOES HERE</div>
+	    	</li>
+	    	
+			<li id="play-chat">
+				<h2>Lobby Chat</h2>
+				<#include "chatSection.ftl">
+			</li>
+		</ul>
+		
 		
 	</body>
 	
