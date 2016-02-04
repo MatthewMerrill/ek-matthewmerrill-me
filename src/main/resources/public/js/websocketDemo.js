@@ -1,5 +1,5 @@
 //Establish the WebSocket connection and set up event handlers
-var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat/");
+var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat/" + location.search);
 webSocket.onmessage = function (msg) { updateChat(msg); };
 webSocket.onclose = function () { alert("WebSocket connection closed") };
 
@@ -16,7 +16,7 @@ id("message").addEventListener("keypress", function (e) {
 //Send a message if it's not empty, then clear the input field
 function sendMessage(message) {
     if (message !== "") {
-        webSocket.send(message);
+        webSocket.send("chat.message:" + message);
         id("message").value = "";
     }
 }

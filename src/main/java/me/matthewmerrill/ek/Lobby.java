@@ -1,16 +1,9 @@
 package me.matthewmerrill.ek;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-import me.matthewmerrill.ek.card.BombCard;
-import me.matthewmerrill.ek.card.Card;
-import me.matthewmerrill.ek.card.CollectCard;
-import me.matthewmerrill.ek.card.Deck;
-import me.matthewmerrill.ek.card.DefuseCard;
-import me.matthewmerrill.ek.card.SkipCard;
+import me.matthewmerrill.ek.card.*;
 
 public class Lobby extends HashMap<String, Object> {
 
@@ -36,7 +29,7 @@ public class Lobby extends HashMap<String, Object> {
 	public static final String TURN_INDEX = "turnIndex";
 	public static final String TURN_DIRECTION = "turnDirection";
 	
-	private static BigInteger curId = BigInteger.valueOf(16 * 16 * 16 * 16 - 1);
+	private static BigInteger curId = BigInteger.valueOf((int) Math.ceil(Math.random() * 1000));
 	
 	public Lobby(String name) {
 		this(
@@ -50,7 +43,7 @@ public class Lobby extends HashMap<String, Object> {
 		
 		put(PASSWORD, null);
 		
-		put(PLAYERS, new ArrayList<Player>());
+		put(PLAYERS, new HashSet<Player>());
 		put(MAX_PLAYERS, 4);
 		
 		put(DRAW_DECK, new Deck());
@@ -75,8 +68,8 @@ public class Lobby extends HashMap<String, Object> {
 
 	
 	@SuppressWarnings("unchecked")
-	public List<Player> getPlayers() {
-		return (List<Player>) get(PLAYERS);
+	public Set<Player> getPlayers() {
+		return (Set<Player>) get(PLAYERS);
 	}
 	
 	public int getTurnIndex() {
@@ -90,7 +83,7 @@ public class Lobby extends HashMap<String, Object> {
 	public void deal() {
 		
 		Deck deck = getDrawDeck();
-		List<Player> players = getPlayers();
+		Set<Player> players = getPlayers();
 
 		deck.clear();
 		players.forEach((Player player) ->

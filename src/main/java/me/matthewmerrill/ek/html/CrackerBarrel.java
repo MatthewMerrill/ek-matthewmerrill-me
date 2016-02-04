@@ -1,9 +1,19 @@
 package me.matthewmerrill.ek.html;
 
-import static j2html.TagCreator.*;
+import java.util.HashMap;
 
-public class CrackerBarrel {
+import org.eclipse.jetty.websocket.api.Session;
+
+import me.matthewmerrill.ek.Lobby;
+
+public class CrackerBarrel extends HashMap<String, Session> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1127989654355188224L;
 	
 	
-
+	
+	
 }

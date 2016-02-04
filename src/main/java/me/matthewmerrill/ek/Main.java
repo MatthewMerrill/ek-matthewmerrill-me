@@ -1,13 +1,14 @@
+package me.matthewmerrill.ek;
 import static spark.Spark.*;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringJoiner;
 
-import me.matthewmerrill.ek.Lobby;
-import me.matthewmerrill.ek.LobbyManager;
-import me.matthewmerrill.ek.Player;
+import me.matthewmerrill.ek.*;
 import me.matthewmerrill.ek.websocket.ChatWebSocketHandler;
-import me.matthewmerrill.ek.websocket.GameWebSocketHandler;
 import spark.Filter;
 import spark.ModelAndView;
 import spark.TemplateViewRoute;
@@ -23,7 +24,6 @@ public class Main {
 
         staticFileLocation("/public"); //index.html is served at localhost:4567 (default port)
 		webSocket("/chat", ChatWebSocketHandler.class);
-        webSocket("/game", GameWebSocketHandler.class);
         init();
 
 		get("/", (request, response) -> {
@@ -37,7 +37,7 @@ public class Main {
 		
 		get("/test", (req, res) -> {
 			StringJoiner sj = new StringJoiner("\n");
-
+			
 			req.attributes().forEach((str) -> sj.add(str + "=" + req.attribute(str)));
 			req.session().attributes().forEach((str) -> sj.add(str + "=" + req.session().attribute(str)));
 			
@@ -63,24 +63,20 @@ public class Main {
 							if (pw == null || !lobby.isPassword(pw)) {
 								attributes.put("message", "Bad Password");
 								attributes.put("lobbies", lm);
-								System.out.println("A");
 								return new ModelAndView(attributes, "lobbyBrowse.ftl");
 							}
 						}
 						
 						attributes.put("lobby", lobby);
-						System.out.println("B");
 						return new ModelAndView(attributes, "play.ftl");
 					}
 					
 					attributes.put("message", "Bad Request");
 					attributes.put("lobbies", lm);
-					System.out.println("C");
 					return new ModelAndView(attributes, "lobbyBrowse.ftl");
 				}
 				
 				attributes.put("lobbies", lm);
-				System.out.println("C");
 				return new ModelAndView(attributes, "lobbyBrowse.ftl");
 				
 			} catch (Exception e) {
@@ -99,8 +95,16 @@ public class Main {
 		
 		Filter loginFilter = (req, res) -> {
 			if (req.session().attribute("pname") == null) {
-				res.redirect("/login?redirect=" + req.pathInfo() +
-						((req.queryString() == null) ? "" : ("?" + req.queryString())) );
+				
+				if (req.cookies().containsKey("pname") && req.cookies().containsKey("ssid") ) {
+					req.session().attribute("pname", req.cookies().get("pname"));
+					req.session().attribute("ssid", req.cookies().get("ssid"));
+					
+					UserData.addUser(req.session().attribute("pname"), req.session().attribute("ssid"));
+				} else {
+					res.redirect("/login?redirect=" + req.pathInfo() +
+							((req.queryString() == null) ? "" : ("?" + req.queryString())) );
+				}
 			}
 			else if (req.pathInfo().endsWith("/")) {
 				res.redirect(req.pathInfo().substring(0, req.pathInfo().length()-1));
@@ -126,15 +130,24 @@ public class Main {
 		post("/login", (req, res) -> {
 			
 			String body = req.body();
-			String[] split = body.split("&");
+			QueryMap map = new QueryMap(body);
 			
-			Arrays.stream(split).forEach((str) -> {
-				String[] entry = str.split("=");
-				if (entry.length == 2) {
-					System.out.println(Arrays.toString(entry));
-					req.session().attribute(entry[0], entry[1]);
+			map.entrySet().forEach((entry) -> {
+				req.session().attribute(entry.getKey(), entry.getValue());
+				res.cookie(entry.getKey(), entry.getValue());
+				
+				if (entry.getKey().equals("pname")) {
+					
+					String ssid = Double.toHexString(Math.random() * 1024);
+					
+					res.cookie("ssid", ssid);
+					UserData.addUser(entry.getValue(), ssid);
 				}
 			});
+
+			System.out.println(body);
+			System.out.println(map);
+			System.out.println(req.session().attributes());
 			
 			if (req.session().attributes().contains("redirect"))
 				res.redirect(req.session().attribute("redirect"));
@@ -145,21 +158,22 @@ public class Main {
 		before("/login/", (req, res) -> res.redirect("/login"));
 		
         Lobby lobby = new Lobby("The Testing Lobby!");
-        lobby.getPlayers().add(new Player("PLAYER1"));
-        lobby.getPlayers().add(new Player("PLAYER2"));
-        lobby.getPlayers().add(new Player("PLAYER3"));
+        lobby.getPlayers().add(new Player("PLAYER1", "a"));
+        lobby.getPlayers().add(new Player("PLAYER2", "b"));
+        lobby.getPlayers().add(new Player("PLAYER3", "c"));
         lobby.deal();
         
         Lobby lobby2 = new Lobby("Super Private Lobby!");
-        lobby2.getPlayers().add(new Player("Bill 'Binary Logic' Gates"));
-        lobby2.getPlayers().add(new Player("Al Gore 'Rhythm'"));
-        lobby2.getPlayers().add(new Player("Barack 'To the Future' Obama"));
+        lobby2.getPlayers().add(new Player("Bill 'Binary Logic' Gates", "d"));
+        lobby2.getPlayers().add(new Player("Al Gore 'Rhythm'", "e"));
+        lobby2.getPlayers().add(new Player("Barack 'To the Future' Obama", "f"));
         lobby2.setPassword("leet");
         lobby2.deal();
         
         lm.add(lobby);
         lm.add(lobby2);
 //*/
+        System.out.println(lm);
 	}
 
 }
