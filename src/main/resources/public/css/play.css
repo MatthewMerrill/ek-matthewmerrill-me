@@ -1,11 +1,10 @@
-
 body {
 	overflow-y: hidden;
-    width:50%;
-    height:600px;
-    background-color:red;
-    margin:0 auto;
-    position: relative;
+	width: 50%;
+	height: 600px;
+	background-color: red;
+	margin: 0 auto;
+	position: relative;
 }
 
 ul.container {
@@ -21,26 +20,63 @@ ul.container li {
 	background-color: #9D9B99;
 	border-top: 5px solid #F5F5F5;
 	max-width: 600px;
+	
+	bottom: 0;
 }
 
 #play-chat h2 {
 	color: #0A142E;
 	text-align: center;
-	
 	background-color: #BBBBBB;
 }
 
 #play-chat .chat-section #chat-wrapper {
-    background-color: #BBBBBB;
+	background-color: #BBBBBB;
 }
 
 #play-sandbox-container {
-	max-width: 1200px;
+	position: relative;
+	
+	max-width: 1000px;
+	overflow: hidden;
+	background-color: #777777;
+	border: 10px solid black;
 }
 
 #play-sandbox {
-	display:block;
-    border:10px solid black;
-    
-    font-size: 400%;
+	display: block;
+	
+	top: 0; bottom: 0; left: 0; right: 0;
+	padding-bottom: 35%;
+
+	font-size: 400%;
+}
+
+#north {
+	text-align: center;
+	
+	max-width: 600px;
+	margin: 0 auto;
+	background-color: #BBBBBB;
+}
+
+#west {
+	position: absolute;
+	top: 0; left: 0; bottom: 0;
+}
+
+#east {
+	position: absolute;
+	top: 0;
+	
+	max-width: 100%;
+	margin: 0 auto;
+	
+	background-color: #BBBBBB;
+}
+
+south {
+	position: absolute;
+	bottom: 0; left: 0; right: 0;
+	background-color: #BBBBBB;
 }

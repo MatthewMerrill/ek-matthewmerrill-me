@@ -19,7 +19,7 @@
 		
 		<ul class="container">
 			<li id="play-sandbox-container">
-	        	<div id="play-sandbox">GAME GOES HERE</div>
+				<#include "sandbox.ftl">
 	    	</li>
 	    	
 			<li id="play-chat">
