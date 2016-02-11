@@ -1,19 +1,30 @@
 package me.matthewmerrill.ek.websocket;
-import static j2html.TagCreator.*;
+import static j2html.TagCreator.article;
+import static j2html.TagCreator.b;
+import static j2html.TagCreator.p;
+import static j2html.TagCreator.span;
 import static spark.Spark.init;
 import static spark.Spark.staticFileLocation;
 import static spark.Spark.webSocket;
 
 import java.net.HttpCookie;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 
+import freemarker.cache.ClassTemplateLoader;
+import freemarker.template.Configuration;
 import me.matthewmerrill.ek.Lobby;
 import me.matthewmerrill.ek.Player;
 import me.matthewmerrill.ek.UserData;
+import spark.ModelAndView;
+import spark.template.freemarker.FreeMarkerEngine;
 
 public class Chat {
 
@@ -39,6 +50,7 @@ public class Chat {
     		if (session != null && session.isOpen()) {
 	            try {
 	                session.getRemote().sendString(String.valueOf(new JSONObject()
+	                    .put("key", "chatMsg")
 	                    .put("userMessage", createHtmlMessageFromSender(sender, message))
 	                    .put("userlist",  userlist)
 	                ));
@@ -60,6 +72,7 @@ public class Chat {
         	
             try {
                 session.getRemote().sendString(String.valueOf(new JSONObject()
+                	.put("key", "chatMsg")
                     .put("userMessage", createHtmlMessageFromSender(sender, message))
                     .put("userlist",  userlist)
                 ));
@@ -67,6 +80,45 @@ public class Chat {
                 e.printStackTrace();
             }
         });
+    }
+    
+    public static void sendSandbox(String html) {
+    	ssidMap.entrySet().stream().filter((entry) -> {return entry.getValue().isOpen();}).forEach((entry) -> {
+		
+			String ssid = entry.getKey();
+			Session session = entry.getValue();
+			
+			UserData udata = UserData.getData(ssid);
+			udata.getLobby().deal();
+			udata.getLobby().getPlayers().stream().filter((Player player) -> player.get(Player.SESSION_ID).equals(ssid)).forEach(player -> {
+				
+				Map<String, Object> attributes = new HashMap<String, Object>();
+				attributes.put("playername", player.get(Player.NAME));
+				attributes.put("cards", player.getDeck());
+				
+				FreeMarkerEngine engine = new FreeMarkerEngine();
+				
+				/*
+				Configuration config = new Configuration();
+				config.setTemplateLoader(new ClassTemplateLoader(Chat.class, "/src/main/resources/spark/template/freemarker"));
+				engine.setConfiguration(config);
+				*/
+				
+				// System.out.println(attributes);
+				
+				ModelAndView mv = engine.modelAndView(attributes, "cardDeck.ftl");
+    			
+				try {	
+        			session.getRemote().sendString(String.valueOf(new JSONObject()
+        					.put("key", "updateSandbox")
+        					.put("playHtml", engine.render(mv))));
+        			
+        		} catch (Exception e) {
+        			e.printStackTrace();
+        		}
+			});
+			
+    	});
     }
     
     //Builds a HTML element with a sender-name, a message, and a timestamp,

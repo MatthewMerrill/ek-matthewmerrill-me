@@ -25,10 +25,15 @@ public class CollectCard extends Card {
 		public String suffix() {
 			return suffix;
 		}
+		
+		@Override
+		public String toString() {
+			return "Collect" + suffix();
+		}
 	}
 	
 	public CollectCard(CollectType type, String id) {
-		super(id, "collect" + type.suffix());
+		super(id, "collect" + type.suffix(), id);
 	}
 	
 	

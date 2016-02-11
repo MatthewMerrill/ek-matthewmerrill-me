@@ -11,7 +11,7 @@ html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p,
 	width: auto;
 	vertical-align: baseline;
 	background: transparent;
-	
+	box-sizing: border-box;
 }
 
 
@@ -129,72 +129,72 @@ div#banner-wrapper h1 {
 /*									CHAT */
 
 .chat-section {
-	display:block;
+	   display: block;
+	   overflow: hidden;
+	
+	   padding: 0;
+	   margin: 0;
+	   
     font-family: monospace;
     font-size: 14px;
     
     width: 100%;
-	height: 100%;
-	
-    margin: 0;
+    height: 100%;
 }
 
 .chat-section #chatControls {
+	   display: block;
     width: 100%;
+    height: 25px;
     overflow: hidden;
-    float:left;
 }
 
 .chat-section input {
-	display: inline-block;
+	   display: block;
     width: 100%;
-    float: left;
 }
 
 .chat-section #chatControls span {
     display: block;
-   
-    
     overflow: hidden;
+    
     margin-right: 20px;
     padding-right: 10px;
 }
 
-.chat-section button {
+.chat-section #chatControls button {
     float: right;
-}
-
-.chat-section li {
-    margin: 5px 0;
 }
 
 .chat-section #userlist {
     float: right;
-    
-    list-style: none;
     background: #f0f0f9;
     padding: 5px 10px;
     width: 150px;
     
-    margin: 5px 0;
     margin-left: 20px;
 }
 
+.chat-section #userlist li {
+	  margin: 5px;
+}
+
 .chat-section #chat-wrapper {
-	overflow-x: hidden;
+	   overflow-x: hidden;
     overflow-y: scroll;
     
     min-width: 300px;
     max-width: 100%;
-    height: 250px;
+    height: 100%;
 }
 
 .chat-section #chat {
-	margin: 5px;
+	   margin: 5px;
+	   padding: 0;
 }
 
 .chat-section #chat p {
-    margin: 5px 0;
+    margin: 15px 0;
     font-weight: 300
 }
 
@@ -220,6 +220,21 @@ div#banner-wrapper h1 {
     border-left-color: #56CE8A;
     animation: enter .2s 1;
 }
+
+
+.deck-card {
+	   display: block;
+	   background: #F5EDEB;
+	   
+	   margin-bottom: -120px;
+	   
+    width: 90px;
+	   height: 150px;
+	   color: #16203E;
+	   border: 2px solid #124126;
+}
+
+
 
 @keyframes enter {
     from { transform: none;        }

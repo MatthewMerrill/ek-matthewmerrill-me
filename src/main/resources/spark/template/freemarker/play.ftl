@@ -18,14 +18,16 @@
 		
 		
 		<ul class="container">
-			<li id="play-sandbox-container">
-				<#include "sandbox.ftl">
-	    	</li>
-	    	
+		
 			<li id="play-chat">
 				<h2>Lobby Chat</h2>
 				<#include "chatSection.ftl">
 			</li>
+		
+			<li id="play-sandbox-container">
+				<#include "sandbox.ftl">
+	    	</li>
+	    	
 		</ul>
 		
 		

@@ -8,6 +8,11 @@ function promptPassword(lobbyId, lobbyName) {
 	}
 }
 
+function cardClicked(cardName) {
+	console.info(cardName);
+	var password = prompt("You clicked  " + cardName, "Cool!");
+}
+
 function validate(evt) {
 	var theEvent = evt || window.event;
 	var key = theEvent.keyCode || theEvent.which;

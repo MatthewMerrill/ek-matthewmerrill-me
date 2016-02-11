@@ -22,21 +22,26 @@ public class DefuseCard extends Card {
 		public String suffix() {
 			return suffix;
 		}
+		
+		@Override
+		public String toString() {
+			return "Defuse" + suffix();
+		}
 	}
 	
 	public DefuseCard(DefuseType type, String id) {
-		super(id, "defuse" + type.suffix());
+		super(id, "defuse" + type.suffix(), "Defuse");
 	}
 	
 	
 	public static Card[] startingCards() {
 		return new Card[] {
-			new DefuseCard(DefuseType.DEFAULT, "0"),
-			new DefuseCard(DefuseType.DEFAULT, "1"),
-			new DefuseCard(DefuseType.DEFAULT, "2"),
-			new DefuseCard(DefuseType.DEFAULT, "3"),	
-			new DefuseCard(DefuseType.DEFAULT, "4"),
-			new DefuseCard(DefuseType.DEFAULT, "5"),	
+			new DefuseCard(DefuseType.DEFAULT, "DFUS0"),
+			new DefuseCard(DefuseType.DEFAULT, "DFUS1"),
+			new DefuseCard(DefuseType.DEFAULT, "DFUS2"),
+			new DefuseCard(DefuseType.DEFAULT, "DFUS3"),	
+			new DefuseCard(DefuseType.DEFAULT, "DFUS4"),
+			new DefuseCard(DefuseType.DEFAULT, "DFUS5"),	
 		};
 	}
 

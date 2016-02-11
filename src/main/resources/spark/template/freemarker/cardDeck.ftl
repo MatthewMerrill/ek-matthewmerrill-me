@@ -1,8 +1,8 @@
 <div class="deck">
-
-  <h4><#if playername??></h4>
+		<#if playername??>
+  <h4>You are: <em>${playername}</em></h4>
+  </#if>
     <#list cards as card>
-      <div class="deck-card"> <img src="${card.imageUrl}"/> </div>
+    		<#include "card.ftl">
     </#list>
-
 </div>

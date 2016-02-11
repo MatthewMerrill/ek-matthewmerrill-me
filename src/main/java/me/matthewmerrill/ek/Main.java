@@ -19,7 +19,20 @@ public class Main {
 	public static LobbyManager lm = new LobbyManager();
 	
 	public static void main(String[] args) {
-		
+
+        Lobby testLobby = new Lobby("The Testing Lobby!");
+        testLobby.getPlayers().add(new Player("PLAYER1", "a"));
+        testLobby.getPlayers().add(new Player("PLAYER2", "b"));
+        testLobby.getPlayers().add(new Player("PLAYER3", "c"));
+        testLobby.deal();
+        
+        Lobby lobby2 = new Lobby("Super Private Lobby!");
+        lobby2.getPlayers().add(new Player("Bill 'Binary Logic' Gates", "d"));
+        lobby2.getPlayers().add(new Player("Al Gore 'Rhythm'", "e"));
+        lobby2.getPlayers().add(new Player("Barack 'To the Future' Obama", "f"));
+        lobby2.setPassword("leet");
+        lobby2.deal();
+        
 		port(Integer.valueOf(System.getenv("PORT")));
 
         staticFileLocation("/public"); //index.html is served at localhost:4567 (default port)
@@ -34,6 +47,15 @@ public class Main {
 		} , new FreeMarkerEngine());
 		
 		get("/hello", (req, res) -> "Hello World");
+		
+		get("/testdeck", (request, response) -> {
+			Map<String, Object> attributes = new HashMap<>();
+			
+			attributes.put("playername", "TestDeck!");
+			attributes.put("cards", testLobby.get(Lobby.DRAW_DECK));
+			
+			return new ModelAndView(attributes, "cardDeck.ftl");
+		} , new FreeMarkerEngine());
 		
 		get("/test", (req, res) -> {
 			StringJoiner sj = new StringJoiner("\n");
@@ -138,59 +160,6 @@ public class Main {
 			return new ModelAndView(attributes, "login.ftl");
 		}, new FreeMarkerEngine());
 
-		get("/newlobby", (req, res) -> {
-			Map<String, Object> attributes = new HashMap<>();
-			
-			String query = req.queryString();
-			
-			if (query != null) {
-				QueryMap map = new QueryMap(query);
-				
-				if (query.contains("invalid"))
-					attributes.put("invalid", true);
-				
-				if (map.containsKey("redirect"))
-					req.session().attribute("redirect", map.get("redirect"));
-			}
-			
-			return new ModelAndView(attributes, "newLobby.ftl");
-		}, new FreeMarkerEngine());
-		
-		post("/newlobby", (req, res) -> {
-
-			String body = req.body();
-			QueryMap map = new QueryMap(body);
-			
-			String lname = null;
-			String lid;
-			
-			for (Map.Entry<String, String> entry : map.entrySet()) {
-				
-				if (entry.getKey().equals("lname")) {
-					
-					lname = entry.getValue();
-					
-					String ssid = Double.toHexString(Math.random() * 1024);
-					
-					UserData.addUser(entry.getValue(), ssid);
-				}
-				
-				req.session().attribute(entry.getKey(), entry.getValue());
-				res.cookie(entry.getKey(), entry.getValue());
-				
-			}
-
-			if (lname == null || lname.equals("") || lname.matches(".*[^a-zA-Z0-9_].*")) {
-				res.redirect("/newlobby?invalid=true");
-				return "Redirecting...";
-			}
-			
-			Lobby lobby = new Lobby(lname);
-			lm.add(lobby);
-			
-			res.redirect("/play?id=" + lobby.getId());
-			return "Redirecting...";
-		});
 		
 		post("/login", (req, res) -> {
 			
@@ -233,20 +202,65 @@ public class Main {
 		
 		before("/login/", (req, res) -> res.redirect("/login"));
 		
-        Lobby lobby = new Lobby("The Testing Lobby!");
-        lobby.getPlayers().add(new Player("PLAYER1", "a"));
-        lobby.getPlayers().add(new Player("PLAYER2", "b"));
-        lobby.getPlayers().add(new Player("PLAYER3", "c"));
-        lobby.deal();
+		get("/newlobby", (req, res) -> {
+			Map<String, Object> attributes = new HashMap<>();
+			
+			String query = req.queryString();
+			
+			if (query != null) {
+				QueryMap map = new QueryMap(query);
+				
+				if (query.contains("invalid"))
+					attributes.put("invalid", true);
+				
+				if (map.containsKey("redirect"))
+					req.session().attribute("redirect", map.get("redirect"));
+			}
+			
+			return new ModelAndView(attributes, "newLobby.ftl");
+		}, new FreeMarkerEngine());
+		
+		post("/newlobby", (req, res) -> {
+
+			String body = req.body();
+			QueryMap map = new QueryMap(body);
+			
+			String lname = null;
+			String lpass = null;
+			
+			for (Map.Entry<String, String> entry : map.entrySet()) {
+				
+				if (entry.getKey().equals("lname")) {
+					lname = entry.getValue();
+				} else if (entry.getKey().equals("lpassword")) {
+					lpass = entry.getValue();
+				}
+				
+				req.session().attribute(entry.getKey(), entry.getValue());
+				res.cookie(entry.getKey(), entry.getValue());
+				
+			}
+
+			if (lname == null || lname.equals("") || lname.matches(".*[^a-zA-Z0-9_].*")) {
+				res.redirect("/newlobby?invalid=true");
+				return "Redirecting...";
+			}
+			
+			Lobby lobby = new Lobby(lname);
+			lm.add(lobby);
+			
+			if (lpass != null && lpass.length() > 0) { 
+				lobby.setPassword(lpass);
+				res.redirect("/play?id=" + lobby.getId() + "&pw=" + lpass);
+			} else {
+				res.redirect("/play?id=" + lobby.getId());
+			}
+			
+			return "Redirecting...";
+		});
+		
         
-        Lobby lobby2 = new Lobby("Super Private Lobby!");
-        lobby2.getPlayers().add(new Player("Bill 'Binary Logic' Gates", "d"));
-        lobby2.getPlayers().add(new Player("Al Gore 'Rhythm'", "e"));
-        lobby2.getPlayers().add(new Player("Barack 'To the Future' Obama", "f"));
-        lobby2.setPassword("leet");
-        lobby2.deal();
-        
-        lm.add(lobby);
+        lm.add(testLobby);
         lm.add(lobby2);
 //*/
         System.out.println(lm);

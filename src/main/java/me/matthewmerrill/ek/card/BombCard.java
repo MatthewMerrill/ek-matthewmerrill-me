@@ -22,19 +22,24 @@ public class BombCard extends Card {
 		public String suffix() {
 			return suffix;
 		}
+		
+		@Override
+		public String toString() {
+			return "Bomb" + suffix();
+		}
 	}
 	
 	public BombCard(BombType type, String id) {
-		super(id,  "bomb" + type.suffix());
+		super(id,  "bomb" + type.suffix(), "Bomb");
 	}
 	
 	
 	public static Card[] startingCards() {
 		return new Card[] {
-			new BombCard(BombType.DEFAULT, "0"),
-			new BombCard(BombType.DEFAULT, "1"),
-			new BombCard(BombType.DEFAULT, "2"),
-			new BombCard(BombType.DEFAULT, "3"),	
+			new BombCard(BombType.DEFAULT, "BOMB0"),
+			new BombCard(BombType.DEFAULT, "BOMB1"),
+			new BombCard(BombType.DEFAULT, "BOMB2"),
+			new BombCard(BombType.DEFAULT, "BOMB3"),	
 		};
 	}
 

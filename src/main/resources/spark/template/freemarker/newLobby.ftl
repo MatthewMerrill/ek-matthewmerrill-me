@@ -15,7 +15,7 @@
 		  <br>
 		</#if>
 		
-		Lobbys will be removed when empty.
+		Lobbies will be removed when empty.
 		<form name="newLobbyForm" id="newLobbyForm" onsubmit="return validateForm()"
 			method="post">
 			Name:<input type="text" name="lname" required>

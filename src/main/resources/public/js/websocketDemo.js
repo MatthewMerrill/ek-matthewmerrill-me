@@ -1,6 +1,19 @@
 //Establish the WebSocket connection and set up event handlers
 var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat/" + location.search);
-webSocket.onmessage = function (msg) { updateChat(msg); };
+webSocket.onmessage = function (msg) { 
+	/*
+	console.info(msg);
+	console.info(msg.data);
+	console.info(msg.data.key);
+	*/
+    var data = JSON.parse(msg.data);
+	
+	if (data.key == 'chatMsg')
+		updateChat(msg);
+	else if (data.key == 'updateSandbox')
+		updateSandbox(msg)
+	};
+	
 webSocket.onclose = function () { alert("WebSocket connection closed") };
 
 //Send message if "Send" is clicked
@@ -23,12 +36,21 @@ function sendMessage(message) {
 
 //Update the chat-panel, and the list of connected users
 function updateChat(msg) {
+	
+	//console.info(msg.data);
+	
     var data = JSON.parse(msg.data);
     insert("chat", data.userMessage);
     id("userlist").innerHTML = "";
     data.userlist.forEach(function (user) {
         insert("userlist", "<li>" + user + "</li>");
     });
+}
+
+//Update the chat-panel, and the list of connected users
+function updateSandbox(msg) {
+  var data = JSON.parse(msg.data);
+  id("play-sandbox-container").innerHTML = data.playHtml;
 }
 
 //Helper function for inserting HTML as the first child of an element

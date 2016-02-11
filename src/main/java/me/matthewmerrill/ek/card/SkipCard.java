@@ -22,19 +22,24 @@ public class SkipCard extends Card {
 		public String suffix() {
 			return suffix;
 		}
+		
+		@Override
+		public String toString() {
+			return "Skip" + suffix();
+		}
 	}
 	
 	public SkipCard(SkipType type, String id) {
-		super(id, "skip" + type.suffix());
+		super(id, "skip" + type.suffix(), "Skip");
 	}
 	
 	
 	public static Card[] startingCards() {
 		return new Card[] {
-			new SkipCard(SkipType.DEFAULT, "0"),
-			new SkipCard(SkipType.DEFAULT, "1"),
-			new SkipCard(SkipType.DEFAULT, "2"),
-			new SkipCard(SkipType.DEFAULT, "3"),	
+			new SkipCard(SkipType.DEFAULT, "SKIP0"),
+			new SkipCard(SkipType.DEFAULT, "SKIP1"),
+			new SkipCard(SkipType.DEFAULT, "SKIP2"),
+			new SkipCard(SkipType.DEFAULT, "SKIP3"),
 		};
 	}
 

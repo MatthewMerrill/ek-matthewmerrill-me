@@ -57,8 +57,10 @@ public class ChatWebSocketHandler {
 		
 		Chat.ssidMap.put(ssid, user);
 
-		if (lobby != null)
+		if (lobby != null) {
 			Chat.broadcastMessage(sender = "Server", msg = (username + " joined the chat"), lobby);
+			Chat.sendSandbox("<img src='/card/defuse.png'></img>");
+		}
 		else
 			System.out.println("Lobby NULL!");
 			
@@ -69,11 +71,23 @@ public class ChatWebSocketHandler {
 	public void onClose(Session user, int statusCode, String reason) {
 		String ssid = Chat.getSSID(user);
 		
-		Chat.ssidMap.remove(ssid);
-		UserData.getData(ssid).getLobby().getPlayers().removeIf(
-				(player) -> player.get(Player.SESSION_ID).equals(ssid));
-		
-		Chat.broadcastMessage(sender = "Server", msg = (UserData.getUsername(ssid) + " left the chat"));
+		if (Chat.ssidMap.get(ssid).equals(user))
+			Chat.ssidMap.remove(ssid);
+
+		try {
+			Lobby lobby = UserData.getData(ssid).getLobby();
+			
+			lobby.getPlayers().removeIf(
+					(player) -> player.get(Player.SESSION_ID).equals(ssid));
+			
+			UserData.getData(ssid).setLobby(null);
+			Main.lm.purge();
+			
+			QueryMap qmap = new QueryMap(user.getUpgradeRequest().getQueryString());
+			lobby = Main.lm.get(qmap.get("id"));
+			
+			Chat.broadcastMessage(sender = "Server", msg = (UserData.getUsername(ssid) + " left the chat"), lobby);
+		} catch (Exception ignored) {}
 	}
 
 	@OnWebSocketMessage
