@@ -1,15 +1,16 @@
-# java-getting-started
+# EK (Working Title)
 
-A barebones Java app, which can easily be deployed to Heroku.  
+A SparkJava online card game.
+Inspired by [Exploding Kittens](http://explodingkittens.com/)
 
-This application support the [Getting Started with Java on Heroku](https://devcenter.heroku.com/articles/getting-started-with-java) article - check it out.
+This application supports the [Getting Started with Java on Heroku](https://devcenter.heroku.com/articles/getting-started-with-java) article - check it out.
 
 ## Running Locally
 
 Make sure you have Java and Maven installed.  Also, install the [Heroku Toolbelt](https://toolbelt.heroku.com/).
 
 ```sh
-$ git clone https://github.com/heroku/java-getting-started.git
+$ git clone https://github.com/MatthewMerrill/ek-matthewmerrill-me.git
 $ cd java-getting-started
 $ mvn install
 $ foreman start web
