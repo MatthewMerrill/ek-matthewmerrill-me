@@ -7,6 +7,7 @@ webSocket.onmessage = function (msg) {
 	console.info(msg.data.key);
 	*/
     var data = JSON.parse(msg.data);
+    console.info("Received: " + msg.data);
 	
 	if (data.key == 'chatMsg')
 		updateChat(msg);
@@ -50,7 +51,19 @@ function updateChat(msg) {
 //Update the chat-panel, and the list of connected users
 function updateSandbox(msg) {
   var data = JSON.parse(msg.data);
-  id("play-sandbox-container").innerHTML = data.playHtml;
+  
+  console.info("updatingSandbox:");
+  
+  if (data.centerHtml != null)
+    id("center").innerHTML = data.centerHtml;
+  if (data.northHtml != null)
+	  id("north").innerHTML = data.northHtml;
+  if (data.southHtml != null)
+	  id("south").innerHTML = data.southHtml;
+  if (data.eastHtml != null)
+	  id("east").innerHTML = data.eastHtml;
+  if (data.westHtml != null)
+	  id("west").innerHTML = data.westHtml;
 }
 
 //Helper function for inserting HTML as the first child of an element

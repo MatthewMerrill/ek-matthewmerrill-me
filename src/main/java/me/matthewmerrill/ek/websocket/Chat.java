@@ -82,43 +82,15 @@ public class Chat {
         });
     }
     
-    public static void sendSandbox(String html) {
-    	ssidMap.entrySet().stream().filter((entry) -> {return entry.getValue().isOpen();}).forEach((entry) -> {
-		
-			String ssid = entry.getKey();
-			Session session = entry.getValue();
+    public static void sendSandbox(String html, String section, String ssid) {
+		try {
+			ssidMap.get(ssid).getRemote().sendString(String.valueOf(new JSONObject()
+					.put("key", "updateSandbox")
+					.put(section + "Html", html)));
 			
-			UserData udata = UserData.getData(ssid);
-			udata.getLobby().deal();
-			udata.getLobby().getPlayers().stream().filter((Player player) -> player.get(Player.SESSION_ID).equals(ssid)).forEach(player -> {
-				
-				Map<String, Object> attributes = new HashMap<String, Object>();
-				attributes.put("playername", player.get(Player.NAME));
-				attributes.put("cards", player.getDeck());
-				
-				FreeMarkerEngine engine = new FreeMarkerEngine();
-				
-				/*
-				Configuration config = new Configuration();
-				config.setTemplateLoader(new ClassTemplateLoader(Chat.class, "/src/main/resources/spark/template/freemarker"));
-				engine.setConfiguration(config);
-				*/
-				
-				// System.out.println(attributes);
-				
-				ModelAndView mv = engine.modelAndView(attributes, "cardDeck.ftl");
-    			
-				try {	
-        			session.getRemote().sendString(String.valueOf(new JSONObject()
-        					.put("key", "updateSandbox")
-        					.put("playHtml", engine.render(mv))));
-        			
-        		} catch (Exception e) {
-        			e.printStackTrace();
-        		}
-			});
-			
-    	});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
     
     //Builds a HTML element with a sender-name, a message, and a timestamp,

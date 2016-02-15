@@ -10,17 +10,16 @@ ul.container li {
 }
 
 #play-chat {
-	float: left;
 	display: block;
-	border-top: 5px solid #F5F5F5;
-	
+	float: left; border-top : 5px solid #F5F5F5;
 	width: 100%;
-	max-width: 230px;
-	height: 550px;
+	max-width: 350px;
+	border-top: 5px solid #F5F5F5; width : 100%; max-width : 350px;
+	height: 300px;
 }
 
 #play-chat .chat-section {
-	background-color: #9D9B99;z
+	background-color: #9D9B99;
 }
 
 #play-chat h2 {
@@ -34,46 +33,61 @@ ul.container li {
 }
 
 #play-sandbox-container {
+	float: right;
 	color: #B6C6F0;
 	overflow: hidden;
 	background-color: #444D66;
 	border: 5px solid #16203E;
+	width: 700px;
+	height: 400px;
+	margin: 0px auto;
+	margin-top: 30px;
+	padding: 10px;
 }
 
 #play-sandbox {
 	display: block;
-	
-	top: 0; bottom: 0; left: 0; right: 0;
-	padding-bottom: 35%;
+}
 
-	font-size: 400%;
+.deck-card {
+	display: block;
+	background: #F5EDEB;
+	margin-bottom: -120px;
+	width: 90px;
+	height: 150px;
+	color: #16203E;
+	border: 2px solid #212C48;
+}
+
+#center {
+	text-align: center;
+	float: center;
+	
+	display: block;
+	margin: auto;
+	
+	width: 400px;
 }
 
 #north {
 	text-align: center;
-	
 	max-width: 600px;
 	margin: 0 auto;
-	background-color: #BBBBBB;
 }
 
 #west {
-	position: absolute;
-	top: 0; left: 0; bottom: 0;
+	float: left; /*
+	position: relative;
+	top: 0; left: 0; bottom: 0; */
 }
 
 #east {
-	position: absolute;
-	top: 0;
-	
-	max-width: 100%;
-	margin: 0 auto;
-	
-	background-color: #BBBBBB;
+	float: right;
 }
 
-south {
-	position: absolute;
-	bottom: 0; left: 0; right: 0;
-	background-color: #BBBBBB;
+#south {
+	position: relative;
+	bottom: 0;
+	left: 0;
+	right: 0;
 }

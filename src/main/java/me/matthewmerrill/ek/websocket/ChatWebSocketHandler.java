@@ -1,12 +1,25 @@
 package me.matthewmerrill.ek.websocket;
 
 import java.net.HttpCookie;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.*;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
-import me.matthewmerrill.ek.*;
+import me.matthewmerrill.ek.Lobby;
+import me.matthewmerrill.ek.Main;
+import me.matthewmerrill.ek.Player;
+import me.matthewmerrill.ek.QueryMap;
+import me.matthewmerrill.ek.UserData;
+import me.matthewmerrill.ek.card.DrawCard;
+import me.matthewmerrill.ek.html.GameRender;
+import spark.ModelAndView;
+import spark.template.freemarker.FreeMarkerEngine;
 
 @WebSocket
 public class ChatWebSocketHandler {
@@ -16,7 +29,7 @@ public class ChatWebSocketHandler {
 	@OnWebSocketConnect
 	public void onConnect(Session user) throws Exception {
 
-		String ssid = "";
+		String ssid;
 		String username = "";
 		Lobby lobby = null;
 		
@@ -53,16 +66,42 @@ public class ChatWebSocketHandler {
 			user.getUpgradeRequest().getCookies().add(new HttpCookie("pname", username));
 			
 			System.out.println("Error");
+			return;
 		}
 		
 		Chat.ssidMap.put(ssid, user);
 
-		if (lobby != null) {
-			Chat.broadcastMessage(sender = "Server", msg = (username + " joined the chat"), lobby);
-			Chat.sendSandbox("<img src='/card/defuse.png'></img>");
-		}
-		else
-			System.out.println("Lobby NULL!");
+		Chat.broadcastMessage(sender = "Server", msg = (username + " joined the chat"), lobby);
+		
+		// Fill in Sandbox
+		UserData udata = UserData.getData(ssid);
+		udata.getLobby().deal();
+		udata.getLobby().getPlayers().stream().filter((Player player) -> player.get(Player.SESSION_ID).equals(ssid)).forEach(player -> {
+			
+			String center = "Hello World!";
+			String north = "<h2>Playing as: " + player.get(Player.NAME) + "</h2>";
+			String south = "";
+			String east = "";
+			String west = GameRender.render(player.getDeck());
+			
+			// CENTER
+			{
+				Map<String, Object> attributes = new HashMap<String, Object>();
+				attributes.put("card", new DrawCard());
+				
+				FreeMarkerEngine engine = new FreeMarkerEngine();
+				ModelAndView centMV = engine.modelAndView(attributes, "card.ftl");
+				center = engine.render(centMV);
+			}
+			
+			
+			Chat.sendSandbox(center, "center", ssid);
+			Chat.sendSandbox(north, "north", ssid);
+			Chat.sendSandbox(south, "south", ssid);
+			Chat.sendSandbox(east, "east", ssid);
+			Chat.sendSandbox(west, "west", ssid);
+		});
+			
 			
 		user.setIdleTimeout(TimeUnit.HOURS.toMillis(10));
 	}

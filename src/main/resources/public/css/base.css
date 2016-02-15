@@ -221,21 +221,6 @@ div#banner-wrapper h1 {
     animation: enter .2s 1;
 }
 
-
-.deck-card {
-	   display: block;
-	   background: #F5EDEB;
-	   
-	   margin-bottom: -120px;
-	   
-    width: 90px;
-	   height: 150px;
-	   color: #16203E;
-	   border: 2px solid #124126;
-}
-
-
-
 @keyframes enter {
     from { transform: none;        }
     50%  { transform: scale(1.05); }
