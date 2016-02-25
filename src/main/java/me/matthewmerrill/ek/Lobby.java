@@ -98,6 +98,19 @@ public class Lobby extends HashMap<String, Object> {
 		put(TURN_INDEX, index);		
 	}
 
+	public void stop() {
+		getDrawDeck().clear();
+		
+		for (Player player : getPlayers()) {
+			player.getDeck().clear();
+		}
+
+		put(BOMBS_EXPLODED, 0);
+		put(BOMBS_REMAINING, 0);
+		
+		ChatWebSocketHandler.updateLobby(this);
+	}
+	
 	public void deal() {
 		
 		Deck deck = getDrawDeck();

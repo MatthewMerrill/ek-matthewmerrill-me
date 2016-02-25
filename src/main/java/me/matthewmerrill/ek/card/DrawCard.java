@@ -2,7 +2,6 @@ package me.matthewmerrill.ek.card;
 
 import me.matthewmerrill.ek.Lobby;
 import me.matthewmerrill.ek.Player;
-import me.matthewmerrill.ek.UserData;
 import me.matthewmerrill.ek.html.GameRender;
 import me.matthewmerrill.ek.websocket.Chat;
 

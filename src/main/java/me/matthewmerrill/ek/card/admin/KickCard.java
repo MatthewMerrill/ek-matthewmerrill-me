@@ -27,12 +27,13 @@ public class KickCard extends Card {
 
 	@Override
 	public void played(Lobby lobby, Deck deck, Player player) {
-		if (lobby.getAdmin().get(Player.SESSION_ID).equals(player.get(Player.SESSION_ID)))
+		if (lobby.getAdmin().get(Player.SESSION_ID).equals(player.get(Player.SESSION_ID))) {
 			PromptCallbackManager.sendPrompt(new KickPrompt(lobby, player));
+		}
 	}
 	
 	public static class KickPrompt extends UserPrompt {
-		
+	
 		public KickPrompt(Lobby lobby, Player player) {
 			super(lobby, player, "kickPlayer", "Type a player to kick.",
 				new LobbyCallback() {
@@ -44,6 +45,8 @@ public class KickCard extends Card {
 							itr.remove();
 							
 							Chat.kickPlayer(target);
+							Chat.broadcastMessage("Server", sender.get(Player.NAME) + " kicked player " + target.get(Player.NAME), lobby);
+							
 							return true;
 						}
 					}

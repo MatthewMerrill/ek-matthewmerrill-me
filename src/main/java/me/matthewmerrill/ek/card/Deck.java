@@ -6,6 +6,7 @@ import java.util.Random;
 
 import me.matthewmerrill.ek.card.admin.KickCard;
 import me.matthewmerrill.ek.card.admin.StartCard;
+import me.matthewmerrill.ek.card.admin.StopCard;
 
 public class Deck extends ArrayList<Card> {
 
@@ -19,6 +20,7 @@ public class Deck extends ArrayList<Card> {
 	public static final Deck ADMIN_DECK = new Deck() {{
 		add(new StartCard());
 		add(new KickCard());
+		add(new StopCard());
 	}};
 	
 	public Card draw() {
