@@ -13,6 +13,10 @@ webSocket.onmessage = function (msg) {
 		updateChat(msg);
 	else if (data.key == 'updateSandbox')
 		updateSandbox(msg)
+	else if (data.key == 'kicked')
+		window.location = '/play';
+	else if (data.key == 'prompt')
+		promptUser(data.lobbyId, data.header, data.message);
 	};
 	
 webSocket.onclose = function () { alert("WebSocket connection closed") };
@@ -33,6 +37,25 @@ function sendMessage(message) {
         webSocket.send("chat.message:" + message);
         id("message").value = "";
     }
+}
+
+function cardClicked(cardId) {
+	console.info(cardId);
+	//var password = prompt("You clicked  " + cardName, "Cool!");
+	
+	if (message !== "") {
+        webSocket.send("card.played:" + cardId);
+    }
+}
+
+function promptUser(lobbyId, header, message) {
+	var rsp = prompt(message, "aa");
+	
+	console.info(rsp);
+	
+	if (rsp != null) {
+		webSocket.send("prompt:" + header + ":" + rsp);
+	}
 }
 
 //Update the chat-panel, and the list of connected users

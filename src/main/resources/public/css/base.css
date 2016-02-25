@@ -130,7 +130,6 @@ div#banner-wrapper h1 {
 
 .chat-section {
 	   display: block;
-	   overflow: hidden;
 	
 	   padding: 0;
 	   margin: 0;
@@ -185,7 +184,7 @@ div#banner-wrapper h1 {
     
     min-width: 300px;
     max-width: 100%;
-    height: 100%;
+    height: 225px;
 }
 
 .chat-section #chat {

@@ -14,7 +14,7 @@ public class DrawCard extends Card {
 	private static final long serialVersionUID = 1L;
 	
 	public DrawCard() {
-		super("0", "???", "Draw");
+		super("0", "???", "Draw", true);
 	}
 	
 	

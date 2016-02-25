@@ -13,8 +13,17 @@ import spark.template.freemarker.FreeMarkerEngine;
 public class GameRender {
 	
 	public static String render(Deck deck) {
+		return render(deck, null);
+	}
+	
+	public static String render(Deck deck, String message) {
+		
+		if (deck == null || deck.isEmpty()) {
+			return h3("Your Hand is Empty.").render();
+		}
+		
 		Map<String, Object> attributes = new HashMap<String, Object>();
-		attributes.put("message", "Your Cards:");
+		attributes.put("message", message);
 		attributes.put("cards", deck);
 		
 		FreeMarkerEngine engine = new FreeMarkerEngine();

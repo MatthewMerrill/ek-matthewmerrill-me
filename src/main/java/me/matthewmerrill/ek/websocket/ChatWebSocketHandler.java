@@ -16,6 +16,8 @@ import me.matthewmerrill.ek.Main;
 import me.matthewmerrill.ek.Player;
 import me.matthewmerrill.ek.QueryMap;
 import me.matthewmerrill.ek.UserData;
+import me.matthewmerrill.ek.card.Card;
+import me.matthewmerrill.ek.card.Deck;
 import me.matthewmerrill.ek.card.DrawCard;
 import me.matthewmerrill.ek.html.GameRender;
 import spark.ModelAndView;
@@ -56,7 +58,7 @@ public class ChatWebSocketHandler {
 				data =UserData.addUser(username, ssid);
 			
 			data.setLobby(lobby);
-			lobby.getPlayers().add(new Player(username, ssid));
+			lobby.addPlayer(new Player(username, ssid));
 			
 		} catch (Exception e) {
 			
@@ -75,14 +77,21 @@ public class ChatWebSocketHandler {
 		
 		// Fill in Sandbox
 		UserData udata = UserData.getData(ssid);
-		udata.getLobby().deal();
-		udata.getLobby().getPlayers().stream().filter((Player player) -> player.get(Player.SESSION_ID).equals(ssid)).forEach(player -> {
+		updateLobby(udata.getLobby());
+
+		user.setIdleTimeout(TimeUnit.HOURS.toMillis(10));
+	}
+	
+	public static void updateLobby(Lobby lobby) {
+		lobby.getPlayers().forEach(player -> {
+			
+			String ssid = player.get(Player.SESSION_ID).toString();
 			
 			String center = "Hello World!";
 			String north = "<h2>Playing as: " + player.get(Player.NAME) + "</h2>";
 			String south = "";
 			String east = "";
-			String west = GameRender.render(player.getDeck());
+			String west = GameRender.render(player.getDeck(), "Your Cards:");
 			
 			// CENTER
 			{
@@ -94,6 +103,15 @@ public class ChatWebSocketHandler {
 				center = engine.render(centMV);
 			}
 			
+			// EAST
+			{
+				try {
+					if (ssid.equals(lobby.getAdmin().get(Player.SESSION_ID))) {
+						east = GameRender.render(Deck.ADMIN_DECK, "Admin Tools:");
+					}
+				} catch (Exception ignored) {}
+			}
+			
 			
 			Chat.sendSandbox(center, "center", ssid);
 			Chat.sendSandbox(north, "north", ssid);
@@ -101,9 +119,6 @@ public class ChatWebSocketHandler {
 			Chat.sendSandbox(east, "east", ssid);
 			Chat.sendSandbox(west, "west", ssid);
 		});
-			
-			
-		user.setIdleTimeout(TimeUnit.HOURS.toMillis(10));
 	}
 
 	@OnWebSocketClose
@@ -120,7 +135,6 @@ public class ChatWebSocketHandler {
 					(player) -> player.get(Player.SESSION_ID).equals(ssid));
 			
 			UserData.getData(ssid).setLobby(null);
-			Main.lm.purge();
 			
 			QueryMap qmap = new QueryMap(user.getUpgradeRequest().getQueryString());
 			lobby = Main.lm.get(qmap.get("id"));
@@ -134,6 +148,9 @@ public class ChatWebSocketHandler {
 
 		System.out.println("Received: " + message);
 
+		if (message == null)
+			return;
+		
 		if (message.startsWith("chat.message:")) {
 			
 			String ssid = Chat.getSSID(user);
@@ -144,6 +161,21 @@ public class ChatWebSocketHandler {
 			System.out.println("Broadcasted: " + msg);
 
 			return;
+		} else if (message.startsWith("card.played:")) {
+			String id = message.substring(message.indexOf(':') + 1);
+			System.out.println("Playing Card:" + id);
+			
+			String ssid = Chat.getSSID(user);
+			Lobby lobby = UserData.getData(ssid).getLobby();
+			Deck deck = lobby.getDrawDeck();
+			Player player = lobby.getPlayer(ssid);
+			
+			System.out.println(id + lobby + deck + player);
+			
+			Card.played(lobby, deck, player, id);
+		} else if (message.startsWith("prompt:")) {
+			String header = message.substring(message.indexOf(':') + 1, message.lastIndexOf(':'));
+			PromptCallbackManager.receivedAnswer(header, message.substring(message.lastIndexOf(':') + 1));
 		}
 
 	}

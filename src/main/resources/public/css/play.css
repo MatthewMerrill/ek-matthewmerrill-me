@@ -1,25 +1,34 @@
-ul.container {
-	display: block;
-	height: 100%;
-}
-
-ul.container li {
+.container {
 	display: block;
 	height: 100%;
 	margin: 30px auto;
 }
 
+.container .play-li {
+	display: block;
+	height: 100%;
+}
+
 #play-chat {
 	display: block;
-	float: left; border-top : 5px solid #F5F5F5;
-	width: 100%;
-	max-width: 350px;
-	border-top: 5px solid #F5F5F5; width : 100%; max-width : 350px;
-	height: 300px;
+	
+	width : 100%;
+	max-width: 550px;
+	
+	position: relative;
+	bottom: 0;
+	
+	margin: auto;
+	border-top: 5px solid #F5F5F5;
+	
 }
 
 #play-chat .chat-section {
 	background-color: #9D9B99;
+	
+	
+	min-height: 50px;
+	height: 250px;
 }
 
 #play-chat h2 {
@@ -33,7 +42,6 @@ ul.container li {
 }
 
 #play-sandbox-container {
-	float: right;
 	color: #B6C6F0;
 	overflow: hidden;
 	background-color: #444D66;
@@ -51,22 +59,37 @@ ul.container li {
 
 .deck-card {
 	display: block;
+	background: #B4ADAB;
+	margin-bottom: -120px;
+	width: 90px;
+	height: 150px;
+	color: #16203E;
+	border: 2px solid #212C48;
+ animation: enter .2s 1;
+}
+
+.deck-card-active {
+	display: block;
 	background: #F5EDEB;
 	margin-bottom: -120px;
 	width: 90px;
 	height: 150px;
 	color: #16203E;
 	border: 2px solid #212C48;
+ animation: enter .2s 1;
+}
+
+#play-sandbox {
+	text-align: center;
 }
 
 #center {
-	text-align: center;
 	float: center;
 	
 	display: block;
-	margin: auto;
+	margin: 0 150px;
 	
-	width: 400px;
+	width: 350px;
 }
 
 #north {
@@ -76,13 +99,16 @@ ul.container li {
 }
 
 #west {
-	float: left; /*
 	position: relative;
-	top: 0; left: 0; bottom: 0; */
+	float: left;
+	max-width: 140px;
+	height: 300px;
+	top: 0; left: 0; bottom: 0; /**/
 }
 
 #east {
 	float: right;
+	max-width: 140px;
 }
 
 #south {

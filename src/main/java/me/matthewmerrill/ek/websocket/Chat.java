@@ -18,13 +18,9 @@ import java.util.Map;
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 
-import freemarker.cache.ClassTemplateLoader;
-import freemarker.template.Configuration;
 import me.matthewmerrill.ek.Lobby;
 import me.matthewmerrill.ek.Player;
 import me.matthewmerrill.ek.UserData;
-import spark.ModelAndView;
-import spark.template.freemarker.FreeMarkerEngine;
 
 public class Chat {
 
@@ -91,6 +87,29 @@ public class Chat {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+    }
+
+    public static void sendPrompt(String ssid, String lobbyId, String message, String header) {
+		try {
+			ssidMap.get(ssid).getRemote().sendString(String.valueOf(new JSONObject()
+					.put("key", "prompt")
+					.put("message", message)
+					.put("lobbyId", lobbyId)
+					.put("header", header)));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+    
+    public static void kickPlayer(Player player) {
+    	try {
+    		String ssid = player.get(Player.SESSION_ID).toString();
+    		ssidMap.get(ssid).getRemote().sendString(String.valueOf(new JSONObject()
+    				.put("key", "kicked")));
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
     }
     
     //Builds a HTML element with a sender-name, a message, and a timestamp,

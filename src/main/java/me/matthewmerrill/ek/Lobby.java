@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 import me.matthewmerrill.ek.card.*;
+import me.matthewmerrill.ek.websocket.ChatWebSocketHandler;
 
 public class Lobby extends HashMap<String, Object> {
 
@@ -20,6 +21,7 @@ public class Lobby extends HashMap<String, Object> {
 	public static final String PLAYERS = "players";
 	public static final String PLAYER_COUNT = "playerCount";
 	public static final String MAX_PLAYERS = "maxPlayers";
+	public static final String ADMIN = "admin";
 
 	public static final String DRAW_DECK = "drawDeck";
 	public static final String BOMBS_EXPLODED = "bombsExploded";
@@ -67,9 +69,25 @@ public class Lobby extends HashMap<String, Object> {
 	}
 
 	
+	public void addPlayer(Player player) {
+		Set<Player> players = getPlayers();
+		if (players.isEmpty())
+			put(ADMIN, player);
+		players.add(player);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public Set<Player> getPlayers() {
 		return (Set<Player>) get(PLAYERS);
+	}
+
+	public Player getPlayer(String ssid) {
+		for (Player pl : getPlayers()) {
+			if (pl.get(Player.SESSION_ID).equals(ssid))
+				return pl;
+		}
+		
+		return null;
 	}
 	
 	public int getTurnIndex() {
@@ -129,6 +147,8 @@ public class Lobby extends HashMap<String, Object> {
 		
 		put(BOMBS_EXPLODED, 0);
 		put(BOMBS_REMAINING, 0);
+		
+		ChatWebSocketHandler.updateLobby(this);
 	}
 
 	public void nextTurn() {
@@ -152,5 +172,9 @@ public class Lobby extends HashMap<String, Object> {
 	
 	public void setPassword(String password) {
 		put(PASSWORD, password);
+	}
+
+	public Player getAdmin() {
+		return (Player) get(ADMIN);
 	}
 }

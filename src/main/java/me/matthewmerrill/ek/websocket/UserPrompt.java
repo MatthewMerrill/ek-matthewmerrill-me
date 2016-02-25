@@ -11,8 +11,9 @@ public abstract class UserPrompt {
 	protected final Player player;
 	protected final LobbyCallback callback;
 	protected final String header;
+	protected final String message;
 	
-	public UserPrompt(Lobby lobby, Player player, LobbyCallback callback, String header) {
+	public UserPrompt(Lobby lobby, Player player, String header, String message, LobbyCallback callback) {
 		
 		if (player == null || callback == null || header.equals(null) || header.length() == 0)
 			throw new IllegalArgumentException("Constructor arguments cannot be null!");
@@ -21,8 +22,9 @@ public abstract class UserPrompt {
 		this.player = player;
 		this.callback = callback;
 		this.header = header;
+		this.message = message;
 	}
-	
+
 	public String getHeader() {
 		return header;
 	}

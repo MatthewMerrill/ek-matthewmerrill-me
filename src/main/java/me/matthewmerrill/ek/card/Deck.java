@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import me.matthewmerrill.ek.card.admin.KickCard;
+import me.matthewmerrill.ek.card.admin.StartCard;
+
 public class Deck extends ArrayList<Card> {
 
 	/**
@@ -12,6 +15,11 @@ public class Deck extends ArrayList<Card> {
 	private static final long serialVersionUID = -5493968985161180117L;	
 	
 	private static Random rand = new Random();
+	
+	public static final Deck ADMIN_DECK = new Deck() {{
+		add(new StartCard());
+		add(new KickCard());
+	}};
 	
 	public Card draw() {
 		return remove(0);

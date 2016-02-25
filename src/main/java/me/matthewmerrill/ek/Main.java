@@ -21,10 +21,10 @@ public class Main {
 	public static void main(String[] args) {
 
         Lobby testLobby = new Lobby("The Testing Lobby!");
-        testLobby.getPlayers().add(new Player("PLAYER1", "a"));
-        testLobby.getPlayers().add(new Player("PLAYER2", "b"));
-        testLobby.getPlayers().add(new Player("PLAYER3", "c"));
-        testLobby.deal();
+       // testLobby.getPlayers().add(new Player("PLAYER1", "a"));
+       // testLobby.getPlayers().add(new Player("PLAYER2", "b"));
+       // testLobby.getPlayers().add(new Player("PLAYER3", "c"));
+       // testLobby.deal();
         
         Lobby lobby2 = new Lobby("Super Private Lobby!");
         lobby2.getPlayers().add(new Player("Bill 'Binary Logic' Gates", "d"));

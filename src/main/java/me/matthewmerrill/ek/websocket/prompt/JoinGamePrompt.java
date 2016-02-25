@@ -8,12 +8,12 @@ import me.matthewmerrill.ek.websocket.UserPrompt;
 public class JoinGamePrompt extends UserPrompt {
 	
 	public JoinGamePrompt(Lobby lobby, Player player, LobbyCallback callback) {
-		super(lobby, player, (Lobby l, Player p, String s) -> {
+		super(lobby, player, "", "", (Lobby l, Player p, String s) -> {
 			
 			l.getPlayers().add(p);
 			
 			return false;
-		}, "joingame");
+		});
 	}
 
 	@Override
