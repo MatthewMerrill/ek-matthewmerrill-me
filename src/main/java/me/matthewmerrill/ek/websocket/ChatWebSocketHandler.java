@@ -189,7 +189,7 @@ public class ChatWebSocketHandler {
 		} else if (message.startsWith("prompt:")) {
 			System.err.println("Processing1 " + message);
 			String header = message.substring(message.indexOf(':') + 1, message.lastIndexOf(':'));
-			PromptCallbackManager.receivedAnswer(header, message.substring(message.lastIndexOf(':') + 1));
+			PromptCallbackManager.receivedAnswer(Chat.getSSID(user), message.substring(message.lastIndexOf(':') + 1));
 		} else {
 			System.out.println("Unknown Message Type!");
 		}
