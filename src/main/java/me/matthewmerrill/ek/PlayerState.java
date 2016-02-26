@@ -13,8 +13,8 @@ public enum PlayerState {
 	public boolean cardActive(Card card, Lobby lobby) {
 		String typeId = card.get(Card.ID).toString();
 
-		if (typeId.equals("nope") && lobby.getState().canNope())
-			return true;
+		//if (typeId.equals("nope") && lobby.getState().canNope())
+		//	return true;
 
 		if (this == PLAYING) {
 			switch (typeId) {
