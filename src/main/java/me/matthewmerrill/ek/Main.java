@@ -98,6 +98,10 @@ public class Main {
 					return new ModelAndView(attributes, "lobbyBrowse.ftl");
 				}
 				
+				String msg = req.queryParams("msg");
+				if (msg != null && msg.length() > 0)
+					attributes.put("message", msg);
+						
 				attributes.put("lobbies", lm);
 				return new ModelAndView(attributes, "lobbyBrowse.ftl");
 				

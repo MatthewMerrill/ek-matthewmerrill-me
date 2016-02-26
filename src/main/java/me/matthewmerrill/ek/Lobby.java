@@ -1,9 +1,19 @@
 package me.matthewmerrill.ek;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-import me.matthewmerrill.ek.card.*;
+import com.google.common.eventbus.EventBus;
+
+import me.matthewmerrill.ek.card.BombCard;
+import me.matthewmerrill.ek.card.Card;
+import me.matthewmerrill.ek.card.CollectCard;
+import me.matthewmerrill.ek.card.Deck;
+import me.matthewmerrill.ek.card.DefuseCard;
+import me.matthewmerrill.ek.card.SkipCard;
+import me.matthewmerrill.ek.event.PlayerJoinLobbyEvent;
 import me.matthewmerrill.ek.websocket.ChatWebSocketHandler;
 
 public class Lobby extends HashMap<String, Object> {
@@ -30,6 +40,10 @@ public class Lobby extends HashMap<String, Object> {
 	public static final String PLAYER_TURN = "playerTurn";
 	public static final String TURN_INDEX = "turnIndex";
 	public static final String TURN_DIRECTION = "turnDirection";
+
+	private static final String STATE = "state";
+	
+	public EventBus eventBus;
 	
 	private static BigInteger curId = BigInteger.valueOf((int) Math.ceil(Math.random() * 1000));
 	
@@ -45,7 +59,7 @@ public class Lobby extends HashMap<String, Object> {
 		
 		put(PASSWORD, null);
 		
-		put(PLAYERS, new HashSet<Player>());
+		put(PLAYERS, new ArrayList<Player>());
 		put(MAX_PLAYERS, 4);
 		
 		put(DRAW_DECK, new Deck());
@@ -54,6 +68,11 @@ public class Lobby extends HashMap<String, Object> {
 		
 		put(PLAYER_TURN, 0);
 		put(TURN_DIRECTION, 1);
+		
+		put(STATE, new LobbyState.Stopped(this));
+		
+		eventBus = new EventBus();
+		eventBus.register(new LobbyListener(this));
 	}
 	
 	public Deck getDrawDeck() {
@@ -70,15 +89,20 @@ public class Lobby extends HashMap<String, Object> {
 
 	
 	public void addPlayer(Player player) {
-		Set<Player> players = getPlayers();
+		List<Player> players = getPlayers();
 		if (players.isEmpty())
 			put(ADMIN, player);
 		players.add(player);
+		
+		PlayerJoinLobbyEvent e = new PlayerJoinLobbyEvent(this, player);
+		eventBus.post(e);
+		//Chat.broadcastMessage("Server", e.getMessage(), this);
+		//Chat.broadcastMessage("Server", e.getMessage());
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Set<Player> getPlayers() {
-		return (Set<Player>) get(PLAYERS);
+	public List<Player> getPlayers() {
+		return (List<Player>) get(PLAYERS);
 	}
 
 	public Player getPlayer(String ssid) {
@@ -114,7 +138,7 @@ public class Lobby extends HashMap<String, Object> {
 	public void deal() {
 		
 		Deck deck = getDrawDeck();
-		Set<Player> players = getPlayers();
+		List<Player> players = getPlayers();
 
 		deck.clear();
 		players.forEach((Player player) ->
@@ -165,7 +189,7 @@ public class Lobby extends HashMap<String, Object> {
 	}
 
 	public void nextTurn() {
-		// TODO Auto-generated method stub
+		setState(getState().next());
 	}
 
 	public boolean hasPassword() {
@@ -187,7 +211,30 @@ public class Lobby extends HashMap<String, Object> {
 		put(PASSWORD, password);
 	}
 
+	public void updateAdmin() {
+		Player admin = getAdmin();
+		if (admin == null || 
+			!getPlayers().stream().anyMatch(
+					(p) -> p.get(Player.SESSION_ID).equals(admin.get(Player.SESSION_ID)))) {
+			
+			if (getPlayers().isEmpty()) { 
+				remove(ADMIN);
+			} else {
+				put(ADMIN, getPlayers().iterator().next());
+				ChatWebSocketHandler.updateLobby(this);
+			}
+		}
+	}
+	
 	public Player getAdmin() {
 		return (Player) get(ADMIN);
+	}
+
+	public LobbyState getState() {
+		return (LobbyState) get(STATE);
+	}
+	public void setState(LobbyState state) {
+		this.put(STATE, state);
+		ChatWebSocketHandler.updateLobby(this);
 	}
 }

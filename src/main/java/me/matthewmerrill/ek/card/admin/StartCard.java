@@ -1,6 +1,7 @@
 package me.matthewmerrill.ek.card.admin;
 
 import me.matthewmerrill.ek.Lobby;
+import me.matthewmerrill.ek.LobbyState;
 import me.matthewmerrill.ek.Player;
 import me.matthewmerrill.ek.card.Card;
 import me.matthewmerrill.ek.card.Deck;
@@ -15,6 +16,7 @@ public class StartCard extends Card {
 	
 	public StartCard() {
 		super("start", "start", "Start");
+		put(DESCRIPTION, "Start/Restart the Game");
 	}
 
 
@@ -23,6 +25,7 @@ public class StartCard extends Card {
 		if (lobby.getAdmin().get(Player.SESSION_ID).equals(player.get(Player.SESSION_ID))) {
 			Chat.broadcastMessage("Server", player.get(Player.NAME) + " started the game.", lobby);
 			lobby.deal();
+			lobby.setState(new LobbyState.Turn(lobby));
 		}
 	}
 	

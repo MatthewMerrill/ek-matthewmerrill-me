@@ -1,6 +1,7 @@
 package me.matthewmerrill.ek.card;
 
 import me.matthewmerrill.ek.Lobby;
+import me.matthewmerrill.ek.LobbyState;
 import me.matthewmerrill.ek.Player;
 
 public class DefuseCard extends Card {
@@ -29,27 +30,29 @@ public class DefuseCard extends Card {
 		}
 	}
 	
-	public DefuseCard(DefuseType type, String id) {
-		super(id, "defuse" + type.suffix(), "Defuse");
+	public DefuseCard(DefuseType type) {
+		super("defuse", "defuse" + type.suffix(), "Defuse");
+		
+		put(DESCRIPTION, "Used After Drawing Bomb");
 	}
 	
 	
 	public static Card[] startingCards() {
 		return new Card[] {
-			new DefuseCard(DefuseType.DEFAULT, "DFUS0"),
-			new DefuseCard(DefuseType.DEFAULT, "DFUS1"),
-			new DefuseCard(DefuseType.DEFAULT, "DFUS2"),
-			new DefuseCard(DefuseType.DEFAULT, "DFUS3"),	
-			new DefuseCard(DefuseType.DEFAULT, "DFUS4"),
-			new DefuseCard(DefuseType.DEFAULT, "DFUS5"),	
+			new DefuseCard(DefuseType.DEFAULT),
+			new DefuseCard(DefuseType.DEFAULT),
+			new DefuseCard(DefuseType.DEFAULT),
+			new DefuseCard(DefuseType.DEFAULT),	
+			new DefuseCard(DefuseType.DEFAULT),
+			new DefuseCard(DefuseType.DEFAULT),	
 		};
 	}
 
 
 	@Override
 	public void played(Lobby lobby, Deck deck, Player player) {
-		//player.killed = false;
-		// TODO: player.prompt(/*where to put bomb*/);
+		LobbyState next = lobby.getState().next();
+		lobby.setState(new LobbyState.Defusing(lobby, player, next));
 	}
 	
 

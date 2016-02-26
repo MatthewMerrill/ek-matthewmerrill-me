@@ -54,17 +54,17 @@ public class Chat {
 	                e.printStackTrace();
 	            }
     		} else {
-    			System.out.println(player);
+    			//System.out.println(player);
     		}
     	});
     }
-    
+    /*
   //Sends a message from one user to all users, along with a list of current usernames
     public static void broadcastMessage(String sender, String message) {
         ssidMap.values().stream().filter(Session::isOpen).forEach(session -> {
         	
         	List<String> userlist = new ArrayList<String>();
-        	UserData.getData(sender).getLobby().getPlayers().forEach((p) -> userlist.add((String) p.get(Player.NAME)));
+        	UserData.getData().getLobby().getPlayers().forEach((p) -> userlist.add((String) p.get(Player.NAME)));
         	
             try {
                 session.getRemote().sendString(String.valueOf(new JSONObject()
@@ -76,6 +76,22 @@ public class Chat {
                 e.printStackTrace();
             }
         });
+    }*/
+    
+    public static void sendMessage(String sender, String message, String ssidTarget) {
+    	
+    	try {
+        	List<String> userlist = new ArrayList<String>();
+        	UserData.getData(ssidTarget).getLobby().getPlayers().forEach((p) -> userlist.add((String) p.get(Player.NAME)));
+	        
+	        ssidMap.get(ssidTarget).getRemote().sendString(String.valueOf(new JSONObject()
+	        	.put("key", "chatMsg")
+	            .put("userMessage", createHtmlMessageFromSender(sender, message))
+	            .put("userlist",  userlist)
+	        ));
+    	} catch  (Exception e) {
+    		e.printStackTrace();
+    	}
     }
     
     public static void sendSandbox(String html, String section, String ssid) {

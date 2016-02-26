@@ -30,7 +30,7 @@ public class Player extends HashMap<String, Object> implements Comparable<Player
 	
 	public void giveCard(Card card) {
 		Deck deck = (Deck) get(DECK);
-		deck.add(card);
+		deck.add(0, card);
 		put(DECK, deck);
 	}
 	
@@ -47,6 +47,10 @@ public class Player extends HashMap<String, Object> implements Comparable<Player
 	@Override
 	public int hashCode() {
 		return get(SESSION_ID).hashCode();
+	}
+
+	public String getSsid() {
+		return (String) get(SESSION_ID);
 	}
 
 }

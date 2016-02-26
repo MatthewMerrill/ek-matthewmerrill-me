@@ -15,6 +15,7 @@ public class StopCard extends Card {
 	
 	public StopCard() {
 		super("stop", "stop", "Stop");
+		put(DESCRIPTION, "Stop the Game");
 	}
 
 

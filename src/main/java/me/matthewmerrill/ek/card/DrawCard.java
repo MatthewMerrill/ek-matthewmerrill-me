@@ -13,7 +13,8 @@ public class DrawCard extends Card {
 	private static final long serialVersionUID = 1L;
 	
 	public DrawCard() {
-		super("0", "???", "Draw", true);
+		super("draw", "draw", "Draw", true);
+		put(DESCRIPTION, "Pick Up a Card");
 	}
 	
 	
@@ -24,12 +25,16 @@ public class DrawCard extends Card {
 
 	@Override
 	public void played(Lobby lobby, Deck deck, Player player) {
-		player.giveCard(deck.draw());
+		Card drawn = deck.draw();
+		
+		drawn.pickedUp(lobby, deck, player);
 		
 		Chat.sendSandbox(
-				GameRender.render(deck),
+				GameRender.render(player.getDeck(), lobby, player, "Your Cards:"),
 				"west",
 				player.get(Player.SESSION_ID).toString());		
+				
+		//ChatWebSocketHandler.updateLobby(lobby);
 	}
 	
 

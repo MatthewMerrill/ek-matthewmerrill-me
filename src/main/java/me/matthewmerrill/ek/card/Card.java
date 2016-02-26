@@ -18,6 +18,8 @@ public abstract class Card extends HashMap<String, Object> {
 
 	public static final String ACTIVE = "active";
 	public static final String IMAGE_URL = "imageUrl";
+
+	public static final String DESCRIPTION = "description";
 	
 	private static Map<String, Card> cardMap = new HashMap<>();
 
@@ -48,6 +50,7 @@ public abstract class Card extends HashMap<String, Object> {
 	
 	public void pickedUp(Lobby lobby, Deck deck, Player player) {
 		player.giveCard(this);
+		lobby.nextTurn();
 	}
 	
 	public static void played(Lobby lobby, Deck deck, Player player, String cardId) {

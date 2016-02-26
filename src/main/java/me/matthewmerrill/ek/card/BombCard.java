@@ -1,6 +1,9 @@
 package me.matthewmerrill.ek.card;
 
+import com.google.common.eventbus.EventBus;
+
 import me.matthewmerrill.ek.Lobby;
+import me.matthewmerrill.ek.LobbyState;
 import me.matthewmerrill.ek.Player;
 
 public class BombCard extends Card {
@@ -10,7 +13,7 @@ public class BombCard extends Card {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	enum BombType {
+	public enum BombType {
 		
 		DEFAULT("");
 		
@@ -29,29 +32,30 @@ public class BombCard extends Card {
 		}
 	}
 	
-	public BombCard(BombType type, String id) {
-		super(id,  "bomb" + type.suffix(), "Bomb");
+	public BombCard(BombType type) {
+		super("bomb",  "bomb" + type.suffix(), "Bomb");
+		put(DESCRIPTION, "Defuse, Otherwise You're out.");
 	}
 	
 	
 	public static Card[] startingCards() {
 		return new Card[] {
-			new BombCard(BombType.DEFAULT, "BOMB0"),
-			new BombCard(BombType.DEFAULT, "BOMB1"),
-			new BombCard(BombType.DEFAULT, "BOMB2"),
-			new BombCard(BombType.DEFAULT, "BOMB3"),	
+			new BombCard(BombType.DEFAULT),
+			new BombCard(BombType.DEFAULT),
+			new BombCard(BombType.DEFAULT),
+			new BombCard(BombType.DEFAULT),	
 		};
 	}
 
 
 	@Override
 	public void played(Lobby lobby, Deck deck, Player player) {
-		//player.killed = true;
+		
 	}
 	
 	@Override
 	public void pickedUp(Lobby lobby, Deck deck, Player player) {
-		//player.killed = true;
+		lobby.setState(new LobbyState.Bomb(lobby, (LobbyState.Turn)lobby.getState().next(), (String)player.get(Player.SESSION_ID)));
 	}
 	
 }

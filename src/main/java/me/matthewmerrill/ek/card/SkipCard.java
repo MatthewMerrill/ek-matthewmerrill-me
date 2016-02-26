@@ -29,17 +29,18 @@ public class SkipCard extends Card {
 		}
 	}
 	
-	public SkipCard(SkipType type, String id) {
-		super(id, "skip" + type.suffix(), "Skip");
+	public SkipCard(SkipType type) {
+		super("skip", "skip" + type.suffix(), "Skip");
+		put(DESCRIPTION, "Ends Your Turn Immediately"); // SpellCheck: fImmediately
 	}
 	
 	
 	public static Card[] startingCards() {
 		return new Card[] {
-			new SkipCard(SkipType.DEFAULT, "SKIP0"),
-			new SkipCard(SkipType.DEFAULT, "SKIP1"),
-			new SkipCard(SkipType.DEFAULT, "SKIP2"),
-			new SkipCard(SkipType.DEFAULT, "SKIP3"),
+			new SkipCard(SkipType.DEFAULT),
+			new SkipCard(SkipType.DEFAULT),
+			new SkipCard(SkipType.DEFAULT),
+			new SkipCard(SkipType.DEFAULT)
 		};
 	}
 

@@ -6,8 +6,8 @@ import me.matthewmerrill.ek.Lobby;
 import me.matthewmerrill.ek.Player;
 import me.matthewmerrill.ek.card.Card;
 import me.matthewmerrill.ek.card.Deck;
+import me.matthewmerrill.ek.html.GameRender;
 import me.matthewmerrill.ek.websocket.Chat;
-import me.matthewmerrill.ek.websocket.ChatWebSocketHandler;
 import me.matthewmerrill.ek.websocket.LobbyCallback;
 import me.matthewmerrill.ek.websocket.PromptCallbackManager;
 import me.matthewmerrill.ek.websocket.UserPrompt;
@@ -22,13 +22,17 @@ public class KickCard extends Card {
 	
 	public KickCard() {
 		super("kick", "kick", "Kick");
+		put(DESCRIPTION, "Give 'em the Boot");
 	}
 
 
 	@Override
 	public void played(Lobby lobby, Deck deck, Player player) {
-		if (lobby.getAdmin().get(Player.SESSION_ID).equals(player.get(Player.SESSION_ID))) {
-			PromptCallbackManager.sendPrompt(new KickPrompt(lobby, player));
+		String ssid = (String)player.get(Player.SESSION_ID);
+		
+		if (lobby.getAdmin().get(Player.SESSION_ID).equals(ssid)) {
+			Chat.sendSandbox(GameRender.renderUserPrompt(lobby, ssid, true, "Select a Player to kick:").render(), "south", ssid);
+			PromptCallbackManager.promptSent(new KickPrompt(lobby, player), 30000L, null);
 		}
 	}
 	
@@ -38,14 +42,19 @@ public class KickCard extends Card {
 			super(lobby, player, "kickPlayer", "Type a player to kick.",
 				new LobbyCallback() {
 				public boolean callback(Lobby l, Player sender, String m) {
+					
+					if (m == null)
+						return true;
+					
 					Iterator<Player> itr = l.getPlayers().iterator();
 					while (itr.hasNext()) {
 						Player target = itr.next();
-						if (m.equalsIgnoreCase((String)target.get(Player.NAME))) {
+						if (m.equalsIgnoreCase((String)target.get(Player.SESSION_ID))) {
 							itr.remove();
 							
 							Chat.kickPlayer(target);
 							Chat.broadcastMessage("Server", sender.get(Player.NAME) + " kicked player " + target.get(Player.NAME), lobby);
+							lobby.updateAdmin();
 							
 							return true;
 						}
@@ -60,8 +69,7 @@ public class KickCard extends Card {
 
 		@Override
 		public boolean validResponse(String response) {
-			// TODO Auto-generated method stub
-			return false;
+			return lobby.getPlayers().stream().anyMatch(p -> p.get(Player.SESSION_ID).equals(response));
 		}
 		
 	}

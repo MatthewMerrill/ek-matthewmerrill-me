@@ -12,6 +12,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 import me.matthewmerrill.ek.Lobby;
+import me.matthewmerrill.ek.LobbyState;
 import me.matthewmerrill.ek.Main;
 import me.matthewmerrill.ek.Player;
 import me.matthewmerrill.ek.QueryMap;
@@ -91,23 +92,33 @@ public class ChatWebSocketHandler {
 			String north = "<h2>Playing as: " + player.get(Player.NAME) + "</h2>";
 			String south = "";
 			String east = "";
-			String west = GameRender.render(player.getDeck(), "Your Cards:");
+			String west = GameRender.render(player.getDeck(), lobby, player, "Your Cards:");
+			
+			// NORTH
+			{
+				//if (!lobby.getState().get(LobbyState.NAME).epped")) {
+					north = "<h2>" + lobby.getState().get(LobbyState.NAME) + "</h2>";
+				//}
+			}
 			
 			// CENTER
 			{
-				Map<String, Object> attributes = new HashMap<String, Object>();
+				/*Map<String, Object> attributes = new HashMap<String, Object>();
 				attributes.put("card", new DrawCard());
 				
 				FreeMarkerEngine engine = new FreeMarkerEngine();
 				ModelAndView centMV = engine.modelAndView(attributes, "card.ftl");
 				center = engine.render(centMV);
+				*/
+				DrawCard card = new DrawCard();
+				center = GameRender.cardTag(card, 1, lobby.getState().isActive(card, player)).render();
 			}
 			
 			// EAST
 			{
 				try {
 					if (ssid.equals(lobby.getAdmin().get(Player.SESSION_ID))) {
-						east = GameRender.render(Deck.ADMIN_DECK, "Admin Tools:");
+						east = GameRender.render(Deck.ADMIN_DECK, null, null, "Admin Tools:");
 					}
 				} catch (Exception ignored) {}
 			}
@@ -115,7 +126,7 @@ public class ChatWebSocketHandler {
 			
 			Chat.sendSandbox(center, "center", ssid);
 			Chat.sendSandbox(north, "north", ssid);
-			Chat.sendSandbox(south, "south", ssid);
+			//Chat.sendSandbox(south, "south", ssid);
 			Chat.sendSandbox(east, "east", ssid);
 			Chat.sendSandbox(west, "west", ssid);
 		});
@@ -148,8 +159,10 @@ public class ChatWebSocketHandler {
 
 		System.out.println("Received: " + message);
 
-		if (message == null)
+		if (message == null) {
+			System.out.println("Null Message!");
 			return;
+		}
 		
 		if (message.startsWith("chat.message:")) {
 			
@@ -174,8 +187,11 @@ public class ChatWebSocketHandler {
 			
 			Card.played(lobby, deck, player, id);
 		} else if (message.startsWith("prompt:")) {
+			System.err.println("Processing1 " + message);
 			String header = message.substring(message.indexOf(':') + 1, message.lastIndexOf(':'));
 			PromptCallbackManager.receivedAnswer(header, message.substring(message.lastIndexOf(':') + 1));
+		} else {
+			System.out.println("Unknown Message Type!");
 		}
 
 	}

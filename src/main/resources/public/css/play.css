@@ -51,32 +51,45 @@
 	margin: 0px auto;
 	margin-top: 30px;
 	padding: 10px;
+	position: relative;
 }
 
 #play-sandbox {
 	display: block;
 }
 
-.deck-card {
+#play-sandbox a {
+    text-decoration: none;
+    font-syle: oblique;
+}
+
+
+#deck-card {
 	display: block;
 	background: #B4ADAB;
-	margin-bottom: -120px;
+	margin-bottom: -100px;
 	width: 90px;
 	height: 150px;
-	color: #16203E;
+	color: #636A7C;
 	border: 2px solid #212C48;
  animation: enter .2s 1;
 }
 
-.deck-card-active {
-	display: block;
+#deck-card.active {
 	background: #F5EDEB;
-	margin-bottom: -120px;
-	width: 90px;
-	height: 150px;
 	color: #16203E;
-	border: 2px solid #212C48;
- animation: enter .2s 1;
+}
+
+#deck-card:hover {
+	margin-bottom: -60px;
+}
+
+#deck-card h6 {
+	display: none;
+}
+
+#deck-card:hover h6 {
+	display: block;
 }
 
 #play-sandbox {
@@ -100,10 +113,25 @@
 
 #west {
 	position: relative;
+	background: #30374C;
 	float: left;
 	max-width: 140px;
 	height: 300px;
-	top: 0; left: 0; bottom: 0; /**/
+	left: 0; /**/
+	overflow: hide;
+}
+
+#west .deck {
+	position: absolute;
+	top: 30px;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	
+	margin-left: 10px;
+	
+	overflow-y: scroll;
+	overflow-x: show;
 }
 
 #east {
@@ -111,9 +139,22 @@
 	max-width: 140px;
 }
 
+#east .deck {
+	width: 100px;
+	margin: auto auto;
+}
+
 #south {
-	position: relative;
+	position: absolute;
 	bottom: 0;
 	left: 0;
 	right: 0;
+	height: 100px;
+}
+
+#south #promptDiv {
+	background-color: #575C6C;
+	margin: 0 auto;
+	height: 100px;
+	width: 350px;
 }
