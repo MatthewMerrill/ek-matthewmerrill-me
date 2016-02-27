@@ -1,6 +1,7 @@
 .container {
 	display: block;
 	height: 100%;
+	max-width: 700px;
 	margin: 30px auto;
 }
 
@@ -19,6 +20,7 @@
 	bottom: 0;
 	
 	margin: auto;
+	margin-top: 30px;
 	border-top: 5px solid #F5F5F5;
 	
 }
@@ -46,7 +48,13 @@
 	overflow: hidden;
 	background-color: #444D66;
 	border: 5px solid #16203E;
-	width: 700px;
+	
+	min-width: 500px;
+	width: 100%;
+	max-width: 700px;
+	
+	
+	
 	height: 400px;
 	margin: 0px auto;
 	margin-top: 30px;
@@ -121,7 +129,7 @@
 	overflow: hide;
 }
 
-#west .deck {
+.deck {
 	position: absolute;
 	top: 30px;
 	bottom: 0;
@@ -135,13 +143,13 @@
 }
 
 #east {
+	position: relative;
+	background: #30374C;
 	float: right;
 	max-width: 140px;
-}
-
-#east .deck {
-	width: 100px;
-	margin: auto auto;
+	height: 300px;
+	right: 0; /**/
+	overflow: hide;
 }
 
 #south {

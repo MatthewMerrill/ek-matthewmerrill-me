@@ -3,6 +3,8 @@ package me.matthewmerrill.ek.card;
 import me.matthewmerrill.ek.Lobby;
 import me.matthewmerrill.ek.LobbyState;
 import me.matthewmerrill.ek.Player;
+import me.matthewmerrill.ek.LobbyState.AttackTurn;
+import me.matthewmerrill.ek.websocket.Chat;
 
 public class SkipCard extends Card {
 
@@ -48,7 +50,14 @@ public class SkipCard extends Card {
 
 	@Override
 	public void played(Lobby lobby, Deck deck, Player player) {
-		lobby.setState(new LobbyState.Nope(lobby, player, lobby.getState(), lobby.getState().next(), "Skip"));
+		player.getDeck().remove(this);
+		Chat.broadcastMessage("Server", player.getName() +" played " + get(Card.NAME) + "!", lobby);
+		LobbyState state = lobby.getState();
+		lobby.setState(new LobbyState.Nope(lobby, player, lobby.getState(),
+				(l, p, m) -> {
+					lobby.setState(state.next());
+					return true;
+				}, "Skip"));
 	}
 	
 

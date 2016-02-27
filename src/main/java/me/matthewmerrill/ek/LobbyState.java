@@ -3,9 +3,11 @@ package me.matthewmerrill.ek;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Consumer;
 
 import me.matthewmerrill.ek.card.Card;
 import me.matthewmerrill.ek.websocket.Chat;
+import me.matthewmerrill.ek.websocket.LobbyCallback;
 import me.matthewmerrill.ek.websocket.PromptCallbackManager;
 import me.matthewmerrill.ek.websocket.SoundManager;
 import me.matthewmerrill.ek.websocket.prompt.DefuseBombPrompt;
@@ -47,7 +49,8 @@ public abstract class LobbyState extends HashMap<String, Object> {
 	
 	public abstract LobbyState next();
 	public abstract boolean isActive(Card card, Player holder);
-	
+
+	public void openedState(){};
 	public void leftState(){};
 	public String sound(){return SoundManager.STATE_CHANGE;};
 	
@@ -276,7 +279,8 @@ public abstract class LobbyState extends HashMap<String, Object> {
 		 */
 		private static final long serialVersionUID = 2383214843446516292L;
 
-		private final Timer timer;
+		private Timer timer;
+		private LobbyCallback callback;
 		private NopePrompt prompt;
 		private boolean noped = false;
 		
@@ -286,7 +290,7 @@ public abstract class LobbyState extends HashMap<String, Object> {
 		private final String action;
 		private final Player player;
 		
-		
+		/*
 		// If we get NOPE'd, go back to prev. 
 		public Nope(Lobby lobby, Player player, LobbyState prev, LobbyState next, String actionName) {
 			super(lobby, "Allowing Nopes...");
@@ -308,7 +312,40 @@ public abstract class LobbyState extends HashMap<String, Object> {
 			prompt = new NopePrompt(lobby, player, this, actionName);
 			prompt.send();
 		}
+		*/
+		
+		// If we get NOPE'd, go back to prev. 
+		public Nope(Lobby lobby, Player player, LobbyState prev, LobbyCallback callback, String actionName) {
+			super(lobby, "Allowing Nopes...");
+			this.prev = prev;
+			this.next = null;
+			this.callback = callback;
+			
+			this.action = actionName;
+			this.player = player;
+		}
+		
+		private void send() {
+			leftState();
+			
+			this.timer = new Timer();
+			timer.schedule(new TimerTask(){
+				
+				@Override
+				public void run() {
+					prompt.cancel();
+					callback.callback(lobby, player, action);
+				}}, 7000L);
+			
+			prompt = new NopePrompt(lobby, player, this, action);
+			prompt.send();
+		}
 
+		@Override
+		public void openedState() {
+			send();
+		}
+		
 		@Override
 		public void leftState() {
 			try {
@@ -319,12 +356,14 @@ public abstract class LobbyState extends HashMap<String, Object> {
 		
 		@Override
 		public LobbyState next() {
-			return (noped) ? prev : next;
+			return (noped || next == null) ? prev : next;
 		}
 		
 		public void nope(Player noper) {
 			Chat.broadcastMessage("Server", noper.getName() + " Nope'd " + player.getName() + "'s " + action, lobby);
-			lobby.setState(new LobbyState.Nope(lobby, noper, prev, next, "Nope"));
+			lobby.setState(new LobbyState.Nope(lobby, noper, this, (l, p, m) -> {
+				lobby.setState(prev);
+				return true;}, "Nope"));
 		}
 
 		@Override
@@ -337,5 +376,36 @@ public abstract class LobbyState extends HashMap<String, Object> {
 		}
 
 	}
+/*
+	public static class Shuffle extends LobbyState {
+	
+		private static final long serialVersionUID = -9108454037643910646L;
 
+		private LobbyState next;
+		
+		public Shuffle(Lobby lobby, LobbyState next) {
+			super(lobby, "Shuffling...");
+			this.next = next;
+			
+			lobby.getDrawDeck().shuffle();
+			lobby.getDrawDeck().shuffle();
+			
+			lobby.setState(next);
+		}
+		
+		@Override
+		public LobbyState next() {
+			return next;
+		}
+		
+		@Override
+		public boolean isActive(Card card, Player player) {
+			
+			switch((String)card.get(Card.ID)) {
+			default:
+				return false;
+			}
+		}
+		
+	}*/
 }

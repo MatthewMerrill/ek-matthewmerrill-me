@@ -5,6 +5,7 @@ import java.util.Iterator;
 import me.matthewmerrill.ek.Lobby;
 import me.matthewmerrill.ek.LobbyState;
 import me.matthewmerrill.ek.Player;
+import me.matthewmerrill.ek.websocket.Chat;
 
 public class DefuseCard extends Card {
 
@@ -56,10 +57,11 @@ public class DefuseCard extends Card {
 		Iterator<Card> itr = player.getDeck().iterator();
 		while (itr.hasNext()) {
 			Card c = itr.next();
-			if (c.get(Card.ID).equals("defuse")) {
+			if (c.equals(this)) {
+				itr.remove();
+				Chat.broadcastMessage("Server", player.getName() +" played " + get(Card.NAME) + "!", lobby);
 				LobbyState next = lobby.getState().next();
 				lobby.setState(new LobbyState.Defusing(lobby, player, next));
-				itr.remove();
 				break;
 			}
 		}

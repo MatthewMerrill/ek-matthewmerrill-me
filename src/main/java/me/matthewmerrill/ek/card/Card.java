@@ -5,6 +5,7 @@ import java.util.Map;
 
 import me.matthewmerrill.ek.Lobby;
 import me.matthewmerrill.ek.Player;
+import me.matthewmerrill.ek.websocket.Chat;
 
 public abstract class Card extends HashMap<String, Object> {
 
@@ -42,6 +43,11 @@ public abstract class Card extends HashMap<String, Object> {
 	}
 	
 	@Override
+	public boolean equals(Object obj) {
+		return get(ID).equals(((Card)obj).get(ID));
+	}
+	
+	@Override
 	public String toString() {
 		return get(ID).toString();
 	}
@@ -55,7 +61,8 @@ public abstract class Card extends HashMap<String, Object> {
 	
 	public static void played(Lobby lobby, Deck deck, Player player, String cardId) {
 		try {
-			cardMap.get(cardId).played(lobby, deck, player);
+			Card card = cardMap.get(cardId);
+			card.played(lobby, deck, player);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

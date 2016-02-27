@@ -15,6 +15,7 @@ import me.matthewmerrill.ek.card.CollectCard;
 import me.matthewmerrill.ek.card.Deck;
 import me.matthewmerrill.ek.card.DefuseCard;
 import me.matthewmerrill.ek.card.NopeCard;
+import me.matthewmerrill.ek.card.ShuffleCard;
 import me.matthewmerrill.ek.card.SkipCard;
 import me.matthewmerrill.ek.websocket.Chat;
 import me.matthewmerrill.ek.websocket.ChatWebSocketHandler;
@@ -102,7 +103,7 @@ public class Lobby extends HashMap<String, Object> {
 		if (!players.contains(player))
 			players.add(player);
 		
-		if (getPlaying().size() < 4 && !isRunning())
+		if (getPlaying().size() < 4 && !isRunning() && !getPlaying().contains(player))
 			getPlaying().add(player);
 		
 		//PlayerJoinLobbyEvent e = new PlayerJoinLobbyEvent(this, player);
@@ -120,8 +121,8 @@ public class Lobby extends HashMap<String, Object> {
 			player.put(Player.KILLED, true);
 		
 		List<Player> playing = getPlaying();
-		playing.remove(player);
-
+		playing.removeIf((p) -> p.equals(player));
+		
 		if (playing.size() == 1 && isRunning()) {
 			setState(new Stopped(this));
 			
@@ -131,6 +132,8 @@ public class Lobby extends HashMap<String, Object> {
 		} else {
 			ChatWebSocketHandler.updateLobby(this);
 		}
+		
+		updateAdmin();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -165,11 +168,13 @@ public class Lobby extends HashMap<String, Object> {
 		
 		for (Player player : getPlayers()) {
 			player.getDeck().clear();
+			player.put(Player.KILLED, false);
 		}
 
 		put(BOMBS_EXPLODED, 0);
 		put(BOMBS_REMAINING, 0);
-		
+
+		setState(new LobbyState.Stopped(this));
 		ChatWebSocketHandler.updateLobby(this);
 	}
 	
@@ -194,6 +199,8 @@ public class Lobby extends HashMap<String, Object> {
 			for (Card card : NopeCard.startingCards())
 				deck.add(card);
 			for (Card card : AttackCard.startingCards())
+				deck.add(card);
+			for (Card card : ShuffleCard.startingCards())
 				deck.add(card);
 
 			deck.shuffle();
@@ -221,8 +228,8 @@ public class Lobby extends HashMap<String, Object> {
 
 		// Add bomb cards, shuffle once more and we're done!
 		{
-			for (Card card : BombCard.startingCards())
-				deck.add(card);
+			for (int i = 1; i < players.size(); ++i)
+				deck.add(new BombCard(BombCard.BombType.DEFAULT));
 
 			deck.shuffle();
 		}
@@ -286,6 +293,7 @@ public class Lobby extends HashMap<String, Object> {
 		this.put(STATE, state);
 		SoundManager.playSound(state.sound(), this);
 		ChatWebSocketHandler.updateLobby(this);
+		state.openedState();
 	}
 
 	public boolean isRunning() {

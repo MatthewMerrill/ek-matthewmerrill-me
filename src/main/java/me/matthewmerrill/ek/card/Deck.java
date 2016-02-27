@@ -7,6 +7,7 @@ import java.util.Random;
 import me.matthewmerrill.ek.card.admin.JoinCard;
 import me.matthewmerrill.ek.card.admin.KickCard;
 import me.matthewmerrill.ek.card.admin.LeaveCard;
+import me.matthewmerrill.ek.card.admin.MuteCard;
 import me.matthewmerrill.ek.card.admin.StartCard;
 import me.matthewmerrill.ek.card.admin.StopCard;
 
@@ -27,6 +28,7 @@ public class Deck extends ArrayList<Card> {
 		private static final long serialVersionUID = 3373329728097890666L;
 
 	{
+		add(new MuteCard());
 		add(new StartCard());
 		add(new KickCard());
 		add(new StopCard());
@@ -42,6 +44,7 @@ public class Deck extends ArrayList<Card> {
 		private static final long serialVersionUID = -3494342248094771754L;
 
 	{
+		add(new MuteCard());
 		add(new JoinCard());
 		add(new LeaveCard());
 	}};

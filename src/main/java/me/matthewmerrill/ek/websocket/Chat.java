@@ -106,7 +106,7 @@ public class Chat {
 					.put(section + "Html", html)));
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
     }
 

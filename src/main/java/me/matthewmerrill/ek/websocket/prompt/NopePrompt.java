@@ -4,6 +4,7 @@ import me.matthewmerrill.ek.Lobby;
 import me.matthewmerrill.ek.LobbyState.Nope;
 import me.matthewmerrill.ek.Player;
 import me.matthewmerrill.ek.card.Card;
+import me.matthewmerrill.ek.card.NopeCard;
 import me.matthewmerrill.ek.html.GameRender;
 import me.matthewmerrill.ek.websocket.Chat;
 import me.matthewmerrill.ek.websocket.PromptCallbackManager;
@@ -18,8 +19,10 @@ public class NopePrompt extends UserPrompt {
 			
 			System.out.println("Received Nope response: " + action + " : " + r);
 			
-			if ("true".equalsIgnoreCase(r) || "yes".equalsIgnoreCase(r))
+			if ("true".equalsIgnoreCase(r) || "yes".equalsIgnoreCase(r)) {
+				player.getDeck().remove(new NopeCard());
 				nope.nope(p);
+			}
 			
 			return true;
 		});
@@ -39,7 +42,7 @@ public class NopePrompt extends UserPrompt {
 				return;
 			
 			Chat.sendSandbox(
-					GameRender.renderYesNoPrompt(lobby, "Would you like to Nope " +player.getName() + "'s " + nope.getAction() + "?").render(),
+					GameRender.renderYesNoPrompt(lobby, "Would you like to Nope " +player.getName() + "'s " + nope.getAction() + "?", false).render(),
 					"south", p.getSsid());
 			PromptCallbackManager.promptSent(this, p.getSsid(), 10000L, "false");
 		});

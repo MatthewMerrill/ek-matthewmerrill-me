@@ -1,6 +1,17 @@
 package me.matthewmerrill.ek.html;
 
-import static j2html.TagCreator.*;
+import static j2html.TagCreator.a;
+import static j2html.TagCreator.button;
+import static j2html.TagCreator.div;
+import static j2html.TagCreator.h3;
+import static j2html.TagCreator.h4;
+import static j2html.TagCreator.h6;
+import static j2html.TagCreator.input;
+import static j2html.TagCreator.li;
+import static j2html.TagCreator.option;
+import static j2html.TagCreator.p;
+import static j2html.TagCreator.select;
+import static j2html.TagCreator.ul;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -156,11 +167,17 @@ public class GameRender {
 	}
 
 	public static Tag renderYesNoPrompt(Lobby lobby, String msg) {
+		return renderYesNoPrompt(lobby, msg);
+	}
+	
+	public static Tag renderYesNoPrompt(Lobby lobby, String msg, boolean def) {
 		List<Tag> options = new ArrayList<Tag>();
 		
 		options.add(option().withValue("true").withText("Yes"));
 		options.add(option().withValue("false").withText("No"));
 		
+		if (!def)
+			options.add(options.remove(0));
 		
 		return renderOptionPrompt(lobby, msg, options);
 	}
@@ -170,6 +187,7 @@ public class GameRender {
 				h3(msg),
 				input().withId("integerInput")
 					.withType("number")
+					.withValue(min + "")
 					.attr("min", min + "")
 					.attr("max", max + ""),
 				button().withText("Submit")

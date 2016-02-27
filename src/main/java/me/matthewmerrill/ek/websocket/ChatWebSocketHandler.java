@@ -80,59 +80,61 @@ public class ChatWebSocketHandler {
 	}
 	
 	public static void updateLobby(Lobby lobby) {
-		lobby.getPlayers().forEach(player -> {
+		lobby.getPlayers().forEach(player -> {updateLobby(lobby,player);});
+	}
+
+	public static void updateLobby(Lobby lobby, Player player) {
+		
+		String ssid = player.get(Player.SESSION_ID).toString();
+		
+		String center = "Hello World!";
+		String north = "<h2>Playing as: " + player.get(Player.NAME) + "</h2>";
+		String south = "";
+		String east = "";
+		String west = GameRender.render(player.getDeck(), lobby, player, "Your Cards:");
+		
+		// NORTH
+		{
+			//if (!lobby.getState().get(LobbyState.NAME).epped")) {
+				north = "<h2>" + lobby.getState().get(LobbyState.NAME) + "</h2>";
+			//}
+		}
+		
+		// CENTER
+		{
+			/*Map<String, Object> attributes = new HashMap<String, Object>();
+			attributes.put("card", new DrawCard());
 			
-			String ssid = player.get(Player.SESSION_ID).toString();
+			FreeMarkerEngine engine = new FreeMarkerEngine();
+			ModelAndView centMV = engine.modelAndView(attributes, "card.ftl");
+			center = engine.render(centMV);
+			*/
 			
-			String center = "Hello World!";
-			String north = "<h2>Playing as: " + player.get(Player.NAME) + "</h2>";
-			String south = "";
-			String east = "";
-			String west = GameRender.render(player.getDeck(), lobby, player, "Your Cards:");
-			
-			// NORTH
-			{
-				//if (!lobby.getState().get(LobbyState.NAME).epped")) {
-					north = "<h2>" + lobby.getState().get(LobbyState.NAME) + "</h2>";
-				//}
+			if (lobby.isRunning()) {
+				DrawCard card = new DrawCard();
+				center = GameRender.cardTag(card, 1, lobby.getState().isActive(card, player)).render();
+			} else {
+				center = GameRender.playerList(lobby);
 			}
-			
-			// CENTER
-			{
-				/*Map<String, Object> attributes = new HashMap<String, Object>();
-				attributes.put("card", new DrawCard());
-				
-				FreeMarkerEngine engine = new FreeMarkerEngine();
-				ModelAndView centMV = engine.modelAndView(attributes, "card.ftl");
-				center = engine.render(centMV);
-				*/
-				
-				if (lobby.isRunning()) {
-					DrawCard card = new DrawCard();
-					center = GameRender.cardTag(card, 1, lobby.getState().isActive(card, player)).render();
+		}
+		
+		// EAST
+		{
+			try {
+				if (ssid.equals(lobby.getAdmin().get(Player.SESSION_ID))) {
+					east = GameRender.render(Deck.ADMIN_DECK, null, null, "Admin Tools:");
 				} else {
-					center = GameRender.playerList(lobby);
+					east = GameRender.render(Deck.EAST_DECK, null, null, "Player Tools:");
 				}
-			}
-			
-			// EAST
-			{
-				try {
-					if (ssid.equals(lobby.getAdmin().get(Player.SESSION_ID))) {
-						east = GameRender.render(Deck.ADMIN_DECK, null, null, "Admin Tools:");
-					} else {
-						east = GameRender.render(Deck.EAST_DECK, null, null, "Player Tools:");
-					}
-				} catch (Exception ignored) {}
-			}
-			
-			
-			Chat.sendSandbox(center, "center", ssid);
-			Chat.sendSandbox(north, "north", ssid);
-			//Chat.sendSandbox(south, "south", ssid);
-			Chat.sendSandbox(east, "east", ssid);
-			Chat.sendSandbox(west, "west", ssid);
-		});
+			} catch (Exception ignored) {}
+		}
+		
+		
+		Chat.sendSandbox(center, "center", ssid);
+		Chat.sendSandbox(north, "north", ssid);
+		//Chat.sendSandbox(south, "south", ssid);
+		Chat.sendSandbox(east, "east", ssid);
+		Chat.sendSandbox(west, "west", ssid);
 	}
 
 	@OnWebSocketClose
@@ -201,5 +203,6 @@ public class ChatWebSocketHandler {
 		}
 
 	}
+
 
 }

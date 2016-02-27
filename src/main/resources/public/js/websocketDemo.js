@@ -1,6 +1,8 @@
 //Establish the WebSocket connection and set up event handlers
 var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port
 		+ "/chat/" + location.search);
+var playSounds = true;
+
 webSocket.onmessage = function(msg) {
 	/*
 	console.info(msg);
@@ -51,7 +53,12 @@ function sendMessage(message) {
 function cardClicked(cardId) {
 	console.info(cardId);
 	//var password = prompt("You clicked  " + cardName, "Cool!");
-
+	
+	if (cardId == "mute") {
+		playSounds = !playSounds;
+		window.alert("Toggled Sounds:" + ((playSounds) ? "On" : "Off"));
+	}
+		
 	if (message !== "") {
 		webSocket.send("card.played:" + cardId);
 	}
@@ -104,9 +111,11 @@ function updateChat(msg) {
 
 //Plays a sound
 function playSound(msg) {
-	var data = JSON.parse(msg.data);
-	var audio = new Audio(data.sound);
-	audio.play();
+	if (playSounds) {
+		var data = JSON.parse(msg.data);
+		var audio = new Audio(data.sound);
+		audio.play();
+	}
 }
 
 //Update the chat-panel, and the list of connected users

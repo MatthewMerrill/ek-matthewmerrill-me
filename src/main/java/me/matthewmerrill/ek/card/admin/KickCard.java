@@ -50,8 +50,8 @@ public class KickCard extends Card {
 					while (itr.hasNext()) {
 						Player target = itr.next();
 						if (m.equalsIgnoreCase((String)target.get(Player.SESSION_ID))) {
-							itr.remove();
 							
+							lobby.killedPlayer(target);
 							Chat.kickPlayer(target);
 							Chat.broadcastMessage("Server", sender.get(Player.NAME) + " kicked player " + target.get(Player.NAME), lobby);
 							lobby.updateAdmin();
