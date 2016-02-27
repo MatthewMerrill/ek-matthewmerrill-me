@@ -37,7 +37,7 @@ public class DefuseBombPrompt extends UserPrompt {
 	
 	public void send() {
 		Chat.sendSandbox(
-				GameRender.renderIntPrompt(lobby, 0, lobby.getDrawDeck().size(), "How many cards do you want on top of the bomb? 0-" + (lobby.getDrawDeck().size()-1)).render(),
+				GameRender.renderIntPrompt(lobby, 0, lobby.getDrawDeck().size()-1, "How many cards do you want on top of the bomb? 0-" + (lobby.getDrawDeck().size()-1)).render(),
 				"south", player.getSsid());
 	}
 

@@ -1,6 +1,7 @@
 package me.matthewmerrill.ek.card;
 
 import me.matthewmerrill.ek.Lobby;
+import me.matthewmerrill.ek.LobbyState;
 import me.matthewmerrill.ek.Player;
 
 public class SkipCard extends Card {
@@ -47,7 +48,7 @@ public class SkipCard extends Card {
 
 	@Override
 	public void played(Lobby lobby, Deck deck, Player player) {
-		//lobby.setPlayerIndex(lobby.getPlayerIndex() + lobby.direction);
+		lobby.setState(new LobbyState.Nope(lobby, player, lobby.getState(), lobby.getState().next(), "Skip"));
 	}
 	
 

@@ -53,4 +53,8 @@ public class Player extends HashMap<String, Object> implements Comparable<Player
 		return (String) get(SESSION_ID);
 	}
 
+	public String getName() {
+		return (String) get(NAME);
+	}
+
 }

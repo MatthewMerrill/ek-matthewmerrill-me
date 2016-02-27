@@ -14,6 +14,8 @@ webSocket.onmessage = function(msg) {
 		updateChat(msg);
 	else if (data.key == 'updateSandbox')
 		updateSandbox(msg)
+	else if (data.key == 'playSound')
+		playSound(msg)
 	else if (data.key == 'kicked')
 		window.location = '/play?msg=Kicked. :(';
 	else if (data.key == 'promptPlayer')
@@ -66,7 +68,7 @@ function promptUser(lobbyId, header, message) {
 }
 
 function promptUserResponse(lobbyId, header) {
-	var e = id("userSelect");
+	var e = id("inputSelect");
 	var response = e.options[e.selectedIndex].value;
 
 	$('#south').empty();
@@ -98,6 +100,13 @@ function updateChat(msg) {
 	data.userlist.forEach(function(user) {
 		insert("userlist", "<li>" + user + "</li>");
 	});
+}
+
+//Plays a sound
+function playSound(msg) {
+	var data = JSON.parse(msg.data);
+	var audio = new Audio(data.sound);
+	audio.play();
 }
 
 //Update the chat-panel, and the list of connected users

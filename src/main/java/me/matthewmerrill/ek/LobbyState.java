@@ -1,10 +1,15 @@
 package me.matthewmerrill.ek;
 
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import me.matthewmerrill.ek.card.Card;
+import me.matthewmerrill.ek.websocket.Chat;
 import me.matthewmerrill.ek.websocket.PromptCallbackManager;
+import me.matthewmerrill.ek.websocket.SoundManager;
 import me.matthewmerrill.ek.websocket.prompt.DefuseBombPrompt;
+import me.matthewmerrill.ek.websocket.prompt.NopePrompt;
 
 public abstract class LobbyState extends HashMap<String, Object> {
 	
@@ -43,6 +48,9 @@ public abstract class LobbyState extends HashMap<String, Object> {
 	public abstract LobbyState next();
 	public abstract boolean isActive(Card card, Player holder);
 	
+	public void leftState(){};
+	public String sound(){return SoundManager.STATE_CHANGE;};
+	
 	public static class Turn extends LobbyState {
 		
 		/**
@@ -55,20 +63,20 @@ public abstract class LobbyState extends HashMap<String, Object> {
 		public int direction = -1;
 
 		public Turn(Lobby lobby) {
-			super(lobby, lobby.getPlayers().get(lobby.getPlayers().size()-1).get(Player.NAME) +"'s Turn.");
-			this.index = lobby.getPlayers().size() - 1;
-			this.activeSsid = (String)lobby.getPlayers().get(index).get(Player.SESSION_ID);
+			super(lobby, lobby.getPlaying().get(lobby.getPlaying().size()-1).get(Player.NAME) +"'s Turn.");
+			this.index = lobby.getPlaying().size() - 1;
+			this.activeSsid = (String)lobby.getPlaying().get(index).get(Player.SESSION_ID);
 		}
 		
 		public Turn(Lobby lobby, int index) {
-			super(lobby, lobby.getPlayers().get(index).get(Player.NAME) +"'s Turn.");
+			super(lobby, lobby.getPlaying().get(index).get(Player.NAME) +"'s Turn.");
 			this.index = index;
-			this.activeSsid = (String)lobby.getPlayers().get(index).get(Player.SESSION_ID);
+			this.activeSsid = (String)lobby.getPlaying().get(index).get(Player.SESSION_ID);
 		}
 		
 		@Override
 		public LobbyState next() {
-			return new Turn(lobby, (index + direction + lobby.getPlayers().size()) % lobby.getPlayers().size());
+			return new Turn(lobby, (index + direction + lobby.getPlaying().size()) % lobby.getPlaying().size());
 		}
 		
 		@Override
@@ -94,14 +102,47 @@ public abstract class LobbyState extends HashMap<String, Object> {
 		 * 
 		 */
 		private static final long serialVersionUID = -9108454037643910646L;
-		
+
+		private Timer timer = null;
 		public final Turn nextTurn;
 		public final String defuserSsid;
 		
-		public Bomb(Lobby lobby, Turn nextTurn, String defuserSsid) {
-			super(lobby, "Defusing Bomb");
+		public Bomb(Lobby lobby, Turn nextTurn, Player player) {
+			super(lobby, player.getName() + " is defusing...");
+			
 			this.nextTurn = nextTurn;
-			this.defuserSsid = defuserSsid;
+			this.defuserSsid = player.getSsid();
+			
+			if (!player.getDeck().stream().anyMatch((c) -> c.get(Card.ID).equals("defuse"))) {
+				this.timer = new Timer();
+				timer.schedule(new TimerTask(){
+
+					@Override
+					public void run() {
+						Chat.broadcastMessage("Server", player.getName() + " could not defuse!", lobby,
+								(lobby.getPlaying().size() > 2) ? SoundManager.MEOW : SoundManager.NO_SOUND);
+						
+						lobby.killedPlayer(player);
+						
+						lobby.nextTurn();
+					}}, 3000L);
+			}
+			
+		}
+
+		@Override
+		public void leftState() {
+			if (timer != null) {
+				try {
+					timer.cancel();
+					timer.purge();
+				} catch (Exception ignored) {};
+			}
+		}
+		
+		@Override
+		public String sound() {
+			return SoundManager.BOMB_PICKUP;
 		}
 		
 		@Override
@@ -135,6 +176,11 @@ public abstract class LobbyState extends HashMap<String, Object> {
 		}
 		
 		@Override
+		public String sound() {
+			return SoundManager.NO_SOUND;
+		}
+		
+		@Override
 		public LobbyState next() {
 			return this;
 		}
@@ -155,16 +201,14 @@ public abstract class LobbyState extends HashMap<String, Object> {
 		 */
 		private static final long serialVersionUID = 2383214843446516292L;
 		private final LobbyState next;
-		private final String ssid;
 		
 		public Defusing(Lobby lobby, Player player, LobbyState next) {
-			super(lobby, "Defusing Bomb...");
+			super(lobby, player.getName() + " is placing bomb...");
 			this.next = next;
-			this.ssid = player.getSsid();
 			
 			DefuseBombPrompt prompt = new DefuseBombPrompt(lobby, player);
 			prompt.send();
-			PromptCallbackManager.promptSent(prompt, 30000L, "0");
+			PromptCallbackManager.promptSent(prompt, player.getSsid(), 30000L, "0");
 		}
 
 		@Override
@@ -175,6 +219,74 @@ public abstract class LobbyState extends HashMap<String, Object> {
 		@Override
 		public boolean isActive(Card card, Player holder) {
 			return false;
+		}
+
+	}
+
+
+	public static class Nope extends LobbyState {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 2383214843446516292L;
+
+		private final Timer timer;
+		private NopePrompt prompt;
+		private boolean noped = false;
+		
+		private final LobbyState prev;
+		private final LobbyState next;
+		
+		private final String action;
+		private final Player player;
+		
+		public Nope(Lobby lobby, Player player, LobbyState prev, LobbyState next, String actionName) {
+			super(lobby, "Allowing Nopes...");
+			this.prev = prev;
+			this.next = next;
+			
+			this.action = actionName;
+			this.player = player;
+			
+			this.timer = new Timer();
+			timer.schedule(new TimerTask(){
+
+				@Override
+				public void run() {
+					prompt.cancel();
+					lobby.nextTurn();
+				}}, 7000L);
+			
+			prompt = new NopePrompt(lobby, player, this, actionName);
+			prompt.send();
+		}
+
+		@Override
+		public void leftState() {
+			try {
+				timer.cancel();
+				timer.purge();
+			} catch (Exception ignored) {};
+		}
+		
+		@Override
+		public LobbyState next() {
+			return (noped) ? prev : next;
+		}
+		
+		public void nope(Player noper) {
+			Chat.broadcastMessage("Server", noper.getName() + " Nope'd " + player.getName() + "'s " + action, lobby);
+			lobby.setState(new LobbyState.Nope(lobby, noper, prev, next, "Nope"));
+		}
+
+		@Override
+		public boolean isActive(Card card, Player holder) {
+			return false;
+		}
+
+		public String getAction() {
+			return action;
 		}
 
 	}

@@ -1,5 +1,7 @@
 package me.matthewmerrill.ek.card;
 
+import java.util.Iterator;
+
 import me.matthewmerrill.ek.Lobby;
 import me.matthewmerrill.ek.LobbyState;
 import me.matthewmerrill.ek.Player;
@@ -51,8 +53,16 @@ public class DefuseCard extends Card {
 
 	@Override
 	public void played(Lobby lobby, Deck deck, Player player) {
-		LobbyState next = lobby.getState().next();
-		lobby.setState(new LobbyState.Defusing(lobby, player, next));
+		Iterator<Card> itr = player.getDeck().iterator();
+		while (itr.hasNext()) {
+			Card c = itr.next();
+			if (c.get(Card.ID).equals("defuse")) {
+				LobbyState next = lobby.getState().next();
+				lobby.setState(new LobbyState.Defusing(lobby, player, next));
+				itr.remove();
+				break;
+			}
+		}
 	}
 	
 

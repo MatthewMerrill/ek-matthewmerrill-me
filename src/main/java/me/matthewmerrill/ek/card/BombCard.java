@@ -1,10 +1,10 @@
 package me.matthewmerrill.ek.card;
 
-import com.google.common.eventbus.EventBus;
-
 import me.matthewmerrill.ek.Lobby;
 import me.matthewmerrill.ek.LobbyState;
 import me.matthewmerrill.ek.Player;
+import me.matthewmerrill.ek.websocket.Chat;
+import me.matthewmerrill.ek.websocket.SoundManager;
 
 public class BombCard extends Card {
 
@@ -55,7 +55,10 @@ public class BombCard extends Card {
 	
 	@Override
 	public void pickedUp(Lobby lobby, Deck deck, Player player) {
-		lobby.setState(new LobbyState.Bomb(lobby, (LobbyState.Turn)lobby.getState().next(), (String)player.get(Player.SESSION_ID)));
+
+		Chat.broadcastMessage("Server", player.getName() + " picked up a bomb!", lobby, SoundManager.NO_SOUND);
+		
+		lobby.setState(new LobbyState.Bomb(lobby, (LobbyState.Turn)lobby.getState().next(), player));
 	}
 	
 }

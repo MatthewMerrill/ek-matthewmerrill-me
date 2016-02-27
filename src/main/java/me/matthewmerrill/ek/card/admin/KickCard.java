@@ -32,7 +32,7 @@ public class KickCard extends Card {
 		
 		if (lobby.getAdmin().get(Player.SESSION_ID).equals(ssid)) {
 			Chat.sendSandbox(GameRender.renderUserPrompt(lobby, ssid, true, "Select a Player to kick:").render(), "south", ssid);
-			PromptCallbackManager.promptSent(new KickPrompt(lobby, player), 30000L, null);
+			PromptCallbackManager.promptSent(new KickPrompt(lobby, player), ssid, 30000L, null);
 		}
 	}
 	

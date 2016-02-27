@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.google.common.eventbus.EventBus;
 
+import me.matthewmerrill.ek.LobbyState.Stopped;
 import me.matthewmerrill.ek.card.BombCard;
 import me.matthewmerrill.ek.card.Card;
 import me.matthewmerrill.ek.card.CollectCard;
@@ -14,7 +15,9 @@ import me.matthewmerrill.ek.card.Deck;
 import me.matthewmerrill.ek.card.DefuseCard;
 import me.matthewmerrill.ek.card.SkipCard;
 import me.matthewmerrill.ek.event.PlayerJoinLobbyEvent;
+import me.matthewmerrill.ek.websocket.Chat;
 import me.matthewmerrill.ek.websocket.ChatWebSocketHandler;
+import me.matthewmerrill.ek.websocket.SoundManager;
 
 public class Lobby extends HashMap<String, Object> {
 
@@ -29,6 +32,7 @@ public class Lobby extends HashMap<String, Object> {
 	public static final String PASSWORD = "password";
 	
 	public static final String PLAYERS = "players";
+	public static final String PLAYING = "playing";
 	public static final String PLAYER_COUNT = "playerCount";
 	public static final String MAX_PLAYERS = "maxPlayers";
 	public static final String ADMIN = "admin";
@@ -60,6 +64,7 @@ public class Lobby extends HashMap<String, Object> {
 		put(PASSWORD, null);
 		
 		put(PLAYERS, new ArrayList<Player>());
+		put(PLAYING, new ArrayList<Player>());
 		put(MAX_PLAYERS, 4);
 		
 		put(DRAW_DECK, new Deck());
@@ -94,15 +99,45 @@ public class Lobby extends HashMap<String, Object> {
 			put(ADMIN, player);
 		players.add(player);
 		
+		if (players.size() < 4)
+			getPlaying().add(player);
+		
 		PlayerJoinLobbyEvent e = new PlayerJoinLobbyEvent(this, player);
 		eventBus.post(e);
+		
+		ChatWebSocketHandler.updateLobby(this);
 		//Chat.broadcastMessage("Server", e.getMessage(), this);
 		//Chat.broadcastMessage("Server", e.getMessage());
+	}
+	
+	public void killedPlayer(Player player) {
+		player.getDeck().clear();
+		
+		if (isRunning())
+			player.put(Player.KILLED, true);
+		
+		List<Player> playing = getPlaying();
+		playing.remove(player);
+
+		if (playing.size() == 1 && isRunning()) {
+			setState(new Stopped(this));
+			
+			Player winner = playing.remove(0);
+			winner.getDeck().clear();
+			Chat.broadcastMessage("Server", winner.getName() + " won the game!", this, SoundManager.WIN);
+		} else {
+			ChatWebSocketHandler.updateLobby(this);
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
 	public List<Player> getPlayers() {
 		return (List<Player>) get(PLAYERS);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Player> getPlaying() {
+		return (List<Player>) get(PLAYING);
 	}
 
 	public Player getPlayer(String ssid) {
@@ -141,8 +176,10 @@ public class Lobby extends HashMap<String, Object> {
 		List<Player> players = getPlayers();
 
 		deck.clear();
-		players.forEach((Player player) ->
-			((Deck)player.get(Player.DECK)).clear());
+		players.forEach((Player player) -> {
+			player.getDeck().clear();
+			player.put(Player.KILLED, false);
+		});
 
 		// Deal bulk of player cards
 		{
@@ -234,7 +271,16 @@ public class Lobby extends HashMap<String, Object> {
 		return (LobbyState) get(STATE);
 	}
 	public void setState(LobbyState state) {
+		LobbyState old = getState();
+		if (old != null)
+			old.leftState();
+		
 		this.put(STATE, state);
+		SoundManager.playSound(state.sound(), this);
 		ChatWebSocketHandler.updateLobby(this);
+	}
+
+	public boolean isRunning() {
+		return !(getState() instanceof Stopped);
 	}
 }

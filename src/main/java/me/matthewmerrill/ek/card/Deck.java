@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import me.matthewmerrill.ek.card.admin.JoinCard;
 import me.matthewmerrill.ek.card.admin.KickCard;
+import me.matthewmerrill.ek.card.admin.LeaveCard;
 import me.matthewmerrill.ek.card.admin.StartCard;
 import me.matthewmerrill.ek.card.admin.StopCard;
 
@@ -17,10 +19,31 @@ public class Deck extends ArrayList<Card> {
 	
 	private static Random rand = new Random();
 	
-	public static final Deck ADMIN_DECK = new Deck() {{
+	public static final Deck ADMIN_DECK = new Deck() {
+		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 3373329728097890666L;
+
+	{
 		add(new StartCard());
 		add(new KickCard());
 		add(new StopCard());
+		add(new JoinCard());
+		add(new LeaveCard());
+	}};
+
+	public static final Deck EAST_DECK = new Deck() {
+		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -3494342248094771754L;
+
+	{
+		add(new JoinCard());
+		add(new LeaveCard());
 	}};
 	
 	public Card draw() {

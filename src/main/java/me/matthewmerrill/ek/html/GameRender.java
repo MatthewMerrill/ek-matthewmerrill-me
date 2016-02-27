@@ -3,11 +3,8 @@ package me.matthewmerrill.ek.html;
 import static j2html.TagCreator.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import j2html.tags.ContainerTag;
@@ -16,8 +13,6 @@ import me.matthewmerrill.ek.Lobby;
 import me.matthewmerrill.ek.Player;
 import me.matthewmerrill.ek.card.Card;
 import me.matthewmerrill.ek.card.Deck;
-import spark.ModelAndView;
-import spark.template.freemarker.FreeMarkerEngine;
 
 public class GameRender {
 	
@@ -38,6 +33,12 @@ public class GameRender {
 	public static String render(Deck deck, Lobby lobby, Player holder, String message) {
 		
 		if (deck == null || deck.isEmpty()) {
+			if ((boolean) holder.get(Player.KILLED))
+				return h3("You Exploded!").render();
+			else if (!lobby.getPlaying().contains(holder)) {
+				return h3("Not currently playing.").render();
+			}
+
 			return h3("Your Hand is Empty.").render();
 		}
 		
@@ -126,9 +127,20 @@ public class GameRender {
 	}
 	*/
 	
+
+	public static Tag renderOptionPrompt(Lobby lobby, String msg, List<Tag> options) {
+		ContainerTag tag = div().withId("promptDiv").with(
+				h3(msg),
+				select().withId("inputSelect")
+						.with(options),
+				button().withText("Submit")
+					.attr("onclick", "promptUserResponse('"+lobby.getId()+"', 'inputSelect')")
+				);
+		
+		return tag;
+	}
 	
 	public static Tag renderUserPrompt(Lobby lobby, String sender, boolean includeSelf, String msg) {
-		
 		List<Tag> userOptions = new ArrayList<Tag>();
 		
 		for (Player player : lobby.getPlayers()) {
@@ -140,17 +152,17 @@ public class GameRender {
 					.withText((String)player.get(Player.NAME)));
 		}
 		
-		ContainerTag tag = div().withId("promptDiv").with(
-				h3(msg),
-				select().withId("userSelect")
-						.with(
-								userOptions
-								),
-				button().withText("Submit")
-					.attr("onclick", "promptUserResponse('"+lobby.getId()+"', 'kickPlayer')")
-				);
+		return renderOptionPrompt(lobby, msg, userOptions);
+	}
+
+	public static Tag renderYesNoPrompt(Lobby lobby, String msg) {
+		List<Tag> options = new ArrayList<Tag>();
 		
-		return tag;
+		options.add(option().withValue("true").withText("Yes"));
+		options.add(option().withValue("false").withText("No"));
+		
+		
+		return renderOptionPrompt(lobby, msg, options);
 	}
 
 	public static Tag renderIntPrompt(Lobby lobby, int min, int max, String msg) {
@@ -165,6 +177,15 @@ public class GameRender {
 				);
 		
 		return tag;
+	}
+
+	public static String playerList(Lobby lobby) {
+		List<Tag> li = new ArrayList<Tag>();
+		li.add(h4("Playing:"));
+		for (Player p : lobby.getPlaying()) {
+			li.add(li(p.getName()));
+		}
+		return ul().with(li).render();
 	}
 	
 }

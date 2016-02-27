@@ -1,8 +1,8 @@
 package me.matthewmerrill.ek.websocket;
 
 import java.net.HttpCookie;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.websocket.api.Session;
@@ -11,6 +11,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
+import j2html.tags.Tag;
 import me.matthewmerrill.ek.Lobby;
 import me.matthewmerrill.ek.LobbyState;
 import me.matthewmerrill.ek.Main;
@@ -21,8 +22,6 @@ import me.matthewmerrill.ek.card.Card;
 import me.matthewmerrill.ek.card.Deck;
 import me.matthewmerrill.ek.card.DrawCard;
 import me.matthewmerrill.ek.html.GameRender;
-import spark.ModelAndView;
-import spark.template.freemarker.FreeMarkerEngine;
 
 @WebSocket
 public class ChatWebSocketHandler {
@@ -74,7 +73,7 @@ public class ChatWebSocketHandler {
 		
 		Chat.ssidMap.put(ssid, user);
 
-		Chat.broadcastMessage(sender = "Server", msg = (username + " joined the chat"), lobby);
+		Chat.broadcastMessage(sender = "Server", msg = (username + " joined the lobby."), lobby);
 		
 		// Fill in Sandbox
 		UserData udata = UserData.getData(ssid);
@@ -110,8 +109,13 @@ public class ChatWebSocketHandler {
 				ModelAndView centMV = engine.modelAndView(attributes, "card.ftl");
 				center = engine.render(centMV);
 				*/
-				DrawCard card = new DrawCard();
-				center = GameRender.cardTag(card, 1, lobby.getState().isActive(card, player)).render();
+				
+				if (lobby.isRunning()) {
+					DrawCard card = new DrawCard();
+					center = GameRender.cardTag(card, 1, lobby.getState().isActive(card, player)).render();
+				} else {
+					center = GameRender.playerList(lobby);
+				}
 			}
 			
 			// EAST
@@ -119,6 +123,8 @@ public class ChatWebSocketHandler {
 				try {
 					if (ssid.equals(lobby.getAdmin().get(Player.SESSION_ID))) {
 						east = GameRender.render(Deck.ADMIN_DECK, null, null, "Admin Tools:");
+					} else {
+						east = GameRender.render(Deck.EAST_DECK, null, null, "Player Tools:");
 					}
 				} catch (Exception ignored) {}
 			}
@@ -142,15 +148,18 @@ public class ChatWebSocketHandler {
 		try {
 			Lobby lobby = UserData.getData(ssid).getLobby();
 			
+			Player player = lobby.getPlayer(ssid);
+			
+			lobby.killedPlayer(player);
 			lobby.getPlayers().removeIf(
-					(player) -> player.get(Player.SESSION_ID).equals(ssid));
+					(p) -> p.get(Player.SESSION_ID).equals(ssid));
 			
 			UserData.getData(ssid).setLobby(null);
 			
-			QueryMap qmap = new QueryMap(user.getUpgradeRequest().getQueryString());
-			lobby = Main.lm.get(qmap.get("id"));
+			//QueryMap qmap = new QueryMap(user.getUpgradeRequest().getQueryString());
+			//lobby = Main.lm.get(qmap.get("id"));
 			
-			Chat.broadcastMessage(sender = "Server", msg = (UserData.getUsername(ssid) + " left the chat"), lobby);
+			Chat.broadcastMessage(sender = "Server", msg = (UserData.getUsername(ssid) + " left the lobby."), lobby);
 		} catch (Exception ignored) {}
 	}
 
@@ -171,7 +180,7 @@ public class ChatWebSocketHandler {
 			Chat.broadcastMessage(sender = UserData.getUsername(ssid),
 					msg = message.substring(message.indexOf(':') + 1), UserData.getData(ssid).getLobby());
 
-			System.out.println("Broadcasted: " + msg);
+			//System.out.println("Broadcasted: " + msg);
 
 			return;
 		} else if (message.startsWith("card.played:")) {

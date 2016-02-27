@@ -35,6 +35,13 @@ public class Chat {
   
     //Sends a message from one user to all users in a current lobby, along with a list of current usernames
     public static void broadcastMessage(String sender, String message, Lobby lobby) {
+    	broadcastMessage(sender, message, lobby, SoundManager.CHAT_MSG);
+    }
+
+	public static void broadcastMessage(String sender, String message, Lobby lobby, boolean chatSound) {
+		broadcastMessage(sender, message, lobby, null);
+	}
+	public static void broadcastMessage(String sender, String message, Lobby lobby, String chatSound) {
     	List<String> userlist = new ArrayList<String>();
     	lobby.getPlayers().forEach(
     			(player) -> userlist.add((String) player.get(Player.NAME)));
@@ -44,20 +51,12 @@ public class Chat {
     		Session session = ssidMap.get(ssid);
     		
     		if (session != null && session.isOpen()) {
-	            try {
-	                session.getRemote().sendString(String.valueOf(new JSONObject()
-	                    .put("key", "chatMsg")
-	                    .put("userMessage", createHtmlMessageFromSender(sender, message))
-	                    .put("userlist",  userlist)
-	                ));
-	            } catch (Exception e) {
-	                e.printStackTrace();
-	            }
+	            sendMessage(sender, message, ssid, chatSound);
     		} else {
     			//System.out.println(player);
     		}
     	});
-    }
+	}
     /*
   //Sends a message from one user to all users, along with a list of current usernames
     public static void broadcastMessage(String sender, String message) {
@@ -77,8 +76,12 @@ public class Chat {
             }
         });
     }*/
-    
+
     public static void sendMessage(String sender, String message, String ssidTarget) {
+    	Chat.sendMessage(sender, message, ssidTarget, SoundManager.CHAT_MSG);
+    }
+    
+    public static void sendMessage(String sender, String message, String ssidTarget, String chatSound) {
     	
     	try {
         	List<String> userlist = new ArrayList<String>();
@@ -87,8 +90,10 @@ public class Chat {
 	        ssidMap.get(ssidTarget).getRemote().sendString(String.valueOf(new JSONObject()
 	        	.put("key", "chatMsg")
 	            .put("userMessage", createHtmlMessageFromSender(sender, message))
-	            .put("userlist",  userlist)
-	        ));
+	            .put("userlist",  userlist)));
+	            
+	        if (chatSound != null)
+	        	SoundManager.playSound(chatSound, ssidTarget);
     	} catch  (Exception e) {
     		e.printStackTrace();
     	}

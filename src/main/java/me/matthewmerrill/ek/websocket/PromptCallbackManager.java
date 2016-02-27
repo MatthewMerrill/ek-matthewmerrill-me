@@ -12,16 +12,14 @@ public class PromptCallbackManager {
 	private static Map<String, Timer> timerMap = new HashMap<>();
 	private static Map<String, Timer> warnTimerMap = new HashMap<>();
 	
-	public static void promptSent(UserPrompt prompt) {
-		String ssid = prompt.player.getSsid();
+	public static void promptSent(UserPrompt prompt, String ssid) {
 		clearTimer(ssid);
 		callbackMap.put(ssid, prompt);
 	}
 	
-	public static void promptSent(UserPrompt prompt, long timerDelay, String def) {
-		final String ssid = prompt.player.getSsid();
+	public static void promptSent(UserPrompt prompt, String ssid, long timerDelay, String def) {
 		clearTimer(ssid);
-		callbackMap.put(prompt.player.getSsid(), prompt);
+		callbackMap.put(ssid, prompt);
 		
 		Timer timer = new Timer();
 		timerMap.put(ssid, timer);
@@ -48,6 +46,8 @@ public class PromptCallbackManager {
 				
 			}, timerDelay-15000L);
 			
+		} else {
+			Chat.sendMessage("Server", String.format("Prompt will default to '%s' in %s seconds.", def, timerDelay/1000), ssid);
 		}
 	}
 	
@@ -71,6 +71,7 @@ public class PromptCallbackManager {
 		UserPrompt prompt = callbackMap.get(ssid);
 		
 		if (prompt == null) {
+			System.out.println("No prompt found for " + ssid);
 			return;
 		}
 		
