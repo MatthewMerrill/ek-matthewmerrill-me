@@ -70,7 +70,7 @@ public class CollectCard extends Card {
 
 	@Override
 	public void played(Lobby lobby, Deck deck, Player player) {
-		lobby.nextTurn();
+		//lobby.nextTurn();
 	}
 	
 

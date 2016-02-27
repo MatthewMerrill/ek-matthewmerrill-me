@@ -8,13 +8,14 @@ import java.util.List;
 import com.google.common.eventbus.EventBus;
 
 import me.matthewmerrill.ek.LobbyState.Stopped;
+import me.matthewmerrill.ek.card.AttackCard;
 import me.matthewmerrill.ek.card.BombCard;
 import me.matthewmerrill.ek.card.Card;
 import me.matthewmerrill.ek.card.CollectCard;
 import me.matthewmerrill.ek.card.Deck;
 import me.matthewmerrill.ek.card.DefuseCard;
+import me.matthewmerrill.ek.card.NopeCard;
 import me.matthewmerrill.ek.card.SkipCard;
-import me.matthewmerrill.ek.event.PlayerJoinLobbyEvent;
 import me.matthewmerrill.ek.websocket.Chat;
 import me.matthewmerrill.ek.websocket.ChatWebSocketHandler;
 import me.matthewmerrill.ek.websocket.SoundManager;
@@ -97,13 +98,15 @@ public class Lobby extends HashMap<String, Object> {
 		List<Player> players = getPlayers();
 		if (players.isEmpty())
 			put(ADMIN, player);
-		players.add(player);
 		
-		if (players.size() < 4)
+		if (!players.contains(player))
+			players.add(player);
+		
+		if (getPlaying().size() < 4 && !isRunning())
 			getPlaying().add(player);
 		
-		PlayerJoinLobbyEvent e = new PlayerJoinLobbyEvent(this, player);
-		eventBus.post(e);
+		//PlayerJoinLobbyEvent e = new PlayerJoinLobbyEvent(this, player);
+		//eventBus.post(e);
 		
 		ChatWebSocketHandler.updateLobby(this);
 		//Chat.broadcastMessage("Server", e.getMessage(), this);
@@ -123,7 +126,7 @@ public class Lobby extends HashMap<String, Object> {
 			setState(new Stopped(this));
 			
 			Player winner = playing.remove(0);
-			winner.getDeck().clear();
+			stop();
 			Chat.broadcastMessage("Server", winner.getName() + " won the game!", this, SoundManager.WIN);
 		} else {
 			ChatWebSocketHandler.updateLobby(this);
@@ -171,9 +174,10 @@ public class Lobby extends HashMap<String, Object> {
 	}
 	
 	public void deal() {
+		stop();
 		
 		Deck deck = getDrawDeck();
-		List<Player> players = getPlayers();
+		List<Player> players = getPlaying();
 
 		deck.clear();
 		players.forEach((Player player) -> {
@@ -186,6 +190,10 @@ public class Lobby extends HashMap<String, Object> {
 			for (Card card : SkipCard.startingCards())
 				deck.add(card);
 			for (Card card : CollectCard.startingCards())
+				deck.add(card);
+			for (Card card : NopeCard.startingCards())
+				deck.add(card);
+			for (Card card : AttackCard.startingCards())
 				deck.add(card);
 
 			deck.shuffle();

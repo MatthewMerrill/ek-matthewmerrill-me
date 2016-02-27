@@ -29,8 +29,8 @@ public abstract class UserPrompt {
 		return header;
 	}
 	
-	public boolean gotResponse(String response) {
-		return callback.callback(lobby, player, response);
+	public boolean gotResponse(String response, String ssid) {
+		return callback.callback(lobby, lobby.getPlayer(ssid), response);
 	}
 	
 	@Override

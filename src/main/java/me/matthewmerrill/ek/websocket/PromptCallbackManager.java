@@ -75,7 +75,7 @@ public class PromptCallbackManager {
 			return;
 		}
 		
-		prompt.gotResponse(response);
+		prompt.gotResponse(response, ssid);
 	}
 
 }

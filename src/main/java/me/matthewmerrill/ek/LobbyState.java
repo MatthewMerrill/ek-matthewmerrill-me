@@ -95,6 +95,51 @@ public abstract class LobbyState extends HashMap<String, Object> {
 		}
 		
 	}
+	public static class AttackTurn extends LobbyState {
+		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -9108454037643910646L;
+		
+		private final LobbyState next;
+		public final int index;
+		public String activeSsid;
+		public int direction = -1;
+
+
+		public AttackTurn(Lobby lobby, LobbyState next) {
+			super(lobby, lobby.getPlaying().get(lobby.getPlaying().size()-1).get(Player.NAME) +"'s Attack Turn.");
+			this.next = next;
+			this.index = lobby.getPlaying().size() - 1;
+			this.activeSsid = (String)lobby.getPlaying().get(index).get(Player.SESSION_ID);
+		}
+		
+		@Override
+		public LobbyState next() {
+			if (next != null)
+				return next;
+			
+			return new Turn(lobby, (index + direction + lobby.getPlaying().size()) % lobby.getPlaying().size());
+		}
+		
+		@Override
+		public boolean isActive(Card card, Player player) {
+			
+			if (!activeSsid.equals(player.get(Player.SESSION_ID)))
+				return false;
+			
+			switch((String)card.get(Card.ID)) {
+			case("nope"):
+			case("defuse"):
+				return false;
+			default:
+				return true;
+			}
+		}
+		
+	}
+	
 	
 	public static class Bomb extends LobbyState {
 		
@@ -241,6 +286,8 @@ public abstract class LobbyState extends HashMap<String, Object> {
 		private final String action;
 		private final Player player;
 		
+		
+		// If we get NOPE'd, go back to prev. 
 		public Nope(Lobby lobby, Player player, LobbyState prev, LobbyState next, String actionName) {
 			super(lobby, "Allowing Nopes...");
 			this.prev = prev;
@@ -255,7 +302,7 @@ public abstract class LobbyState extends HashMap<String, Object> {
 				@Override
 				public void run() {
 					prompt.cancel();
-					lobby.nextTurn();
+					lobby.setState(next);
 				}}, 7000L);
 			
 			prompt = new NopePrompt(lobby, player, this, actionName);

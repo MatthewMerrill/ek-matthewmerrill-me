@@ -1,8 +1,6 @@
 package me.matthewmerrill.ek.websocket;
 
 import java.net.HttpCookie;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.websocket.api.Session;
@@ -11,7 +9,6 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
-import j2html.tags.Tag;
 import me.matthewmerrill.ek.Lobby;
 import me.matthewmerrill.ek.LobbyState;
 import me.matthewmerrill.ek.Main;
@@ -147,6 +144,7 @@ public class ChatWebSocketHandler {
 
 		try {
 			Lobby lobby = UserData.getData(ssid).getLobby();
+			Chat.broadcastMessage(sender = "Server", msg = (UserData.getUsername(ssid) + " left the lobby."), lobby);
 			
 			Player player = lobby.getPlayer(ssid);
 			
@@ -159,7 +157,6 @@ public class ChatWebSocketHandler {
 			//QueryMap qmap = new QueryMap(user.getUpgradeRequest().getQueryString());
 			//lobby = Main.lm.get(qmap.get("id"));
 			
-			Chat.broadcastMessage(sender = "Server", msg = (UserData.getUsername(ssid) + " left the lobby."), lobby);
 		} catch (Exception ignored) {}
 	}
 
