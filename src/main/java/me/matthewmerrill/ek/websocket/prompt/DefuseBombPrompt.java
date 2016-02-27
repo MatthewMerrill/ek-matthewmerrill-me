@@ -14,13 +14,16 @@ public class DefuseBombPrompt extends UserPrompt {
 		super(lobby, player, "integerPrompt", "How many cards deep do you want the bomb?", (l, p, r) -> {
 			try {
 				int index = Integer.parseInt(r);
-				lobby.getDrawDeck().set(index, new BombCard(BombType.DEFAULT));
+				lobby.getDrawDeck().add(index, new BombCard(BombType.DEFAULT));
 				lobby.nextTurn();
 				
 				System.err.println("Defused " + index + " deep.");
 				
 				return true;
 			} catch (Exception e) {
+				lobby.getDrawDeck().add(0, new BombCard(BombType.DEFAULT));
+				lobby.nextTurn();
+				
 				return false;
 			}
 		});
@@ -36,8 +39,14 @@ public class DefuseBombPrompt extends UserPrompt {
 	}
 	
 	public void send() {
+		if (lobby.getDrawDeck().isEmpty()) {
+			Chat.sendSandbox(
+					GameRender.renderIntPrompt(lobby, 0, 0, "How many cards do you want on top of the bomb? 0->0").render(),
+					"south", player.getSsid());
+		}
+		
 		Chat.sendSandbox(
-				GameRender.renderIntPrompt(lobby, 0, lobby.getDrawDeck().size()-1, "How many cards do you want on top of the bomb? 0-" + (lobby.getDrawDeck().size()-1)).render(),
+				GameRender.renderIntPrompt(lobby, 0, lobby.getDrawDeck().size(), "How many cards do you want on top of the bomb? 0->" + (lobby.getDrawDeck().size())).render(),
 				"south", player.getSsid());
 	}
 
