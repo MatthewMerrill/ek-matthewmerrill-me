@@ -241,6 +241,10 @@ public class Lobby extends HashMap<String, Object> {
 	}
 
 	public void nextTurn() {
+		
+		if (getPlaying().size() < 2)
+			stop();
+		
 		setState(getState().next());
 	}
 
